@@ -32,6 +32,8 @@ defmodule LogDispatcher do
         send(Player, :status)
       line == "pronade" ->
         send(Movement, :pronade)
+      line == "chatur" ->
+        Player.init(:ok)
       line == "stop_movement" ->
         Movement.kill()
       line == "show_nade_options" ->
