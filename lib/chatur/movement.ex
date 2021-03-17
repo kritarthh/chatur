@@ -15,17 +15,10 @@ defmodule Movement do
 
   # tmp_file = "/tmp/#{get_random_string(10)}"
 
-  defp execute(command_list) when length(command_list) > 2 do
-    commands = command_list
-    |> Enum.map(fn xy -> Input.mouse_format(xy) end)
-    Input.execute_commands(commands)
+  defp execute(xy_list) do
+    command = Input.mouse_format(xy_list)
+    Input.execute_commands(command)
   end
-
-  defp execute(command_list) when length(command_list) < 3 do
-    command_list
-    |> Enum.each(fn c -> Shell.execute(Input.mouse_format(c)) end)
-  end
-
 
   defp get_moves(x, y) do
     lx = Enum.to_list 0..round(x)

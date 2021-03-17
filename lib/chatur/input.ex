@@ -37,8 +37,8 @@ defmodule Input do
     send_text(text, wid)
   end
 
-  def mouse_format(xspacey) do
-    format(xspacey)
+  def mouse_format(xspacey_list) do
+    format(xspacey_list)
   end
 
   def execute_commands(command_list) do

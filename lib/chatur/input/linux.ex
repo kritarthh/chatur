@@ -36,8 +36,9 @@ defmodule Input.Linux do
     end
   end
 
-  def format(xspacey) do
-    "xdotool mousemove_relative --sync -- #{xspacey}"
+  def format(xspacey_list) do
+    xspacey_list
+    |> Enum.map(fn x -> "xdotool mousemove_relative --sync -- #{x}" end)
   end
 
   def get_tmp_file() do
