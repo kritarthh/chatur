@@ -47,4 +47,12 @@ defmodule Input.Windows do
   def execute_file(filename) do
     Shell.execute("cmd.exe /c #{filename}")
   end
+
+  def link() do
+    Shell.execute("cmd.exe",
+      ["/c",
+       "mklink",
+       "C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\csgo\cfg\chatur\console.log",
+       "Z:\chatur_console.log"])
+  end
 end

@@ -24,16 +24,7 @@ defmodule LogDispatcher do
       String.starts_with?(line, "Damage Given to ") or String.starts_with?(line, "Player: ") ->
         send(Chat, {:collect, line, "Player: "})
       String.starts_with?(line, "Started tracking Steam Net Connection to") ->
-        Logger.debug("Match found accepting")
-        wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-        Shell.execute("xdotool mousemove --sync 1920 1180")
-        Shell.execute("xdotool click --window #{wid} 1")
-        Shell.execute("xdotool mousemove --sync 1920 1280")
-        Shell.execute("xdotool click --window #{wid} 1")
-        Shell.execute("xdotool mousemove --sync 1920 1380")
-        Shell.execute("xdotool click --window #{wid} 1")
-        Shell.execute("xdotool mousemove --sync 1920 1480")
-        Shell.execute("xdotool click --window #{wid} 1")
+        Logger.debug("Match found accepting code goes here")
       line == "Counter-Strike: Global Offensive" ->
         Logger.debug("Connected to match, update player")
         Player.update()

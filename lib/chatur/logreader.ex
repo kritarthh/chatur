@@ -1,9 +1,29 @@
+defmodule CrossPlatform.Reader do
+  require Logger
+  defmacro __using__(_) do
+    case :os.type do
+      {:win32, _} ->
+        quote do
+          @log_file "Z:\chatur_console.log"
+        end
+      {:unix, :linux} ->
+        quote do
+          @log_file "/tmp/chatur_console.log"
+        end
+      ost ->
+        Logger.error("Unsupported platform #{inspect ost}")
+        :err
+    end
+  end
+
+end
+
 defmodule LogReader do
   use GenServer
+  use CrossPlatform.Reader
 
   require Logger
 
-  @log_file "/tmp/csgo.log"
   @poll_interval 250 # 5 seconds
 
   def start_link(_ \\ []) do
@@ -16,7 +36,7 @@ defmodule LogReader do
     # File.rm(@log_file)
     File.rm_rf(@log_file)
     File.touch(@log_file)
-    Console.execute("con_logfile csgo.log")
+    Console.execute("con_logfile cfg/chatur/console.log")
     {:ok, fp} = File.open(@log_file, [:read])
     :file.position(fp, :eof)
     poll()
