@@ -43,7 +43,6 @@ defmodule Player do
   end
 
   defp binds() do
-    Console.execute("")
     for k <- Nade.keys() do
       Console.execute("bind #{k} \"echo #{k}\"")
     end
