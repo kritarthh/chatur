@@ -16,18 +16,15 @@ defmodule Movement do
   # tmp_file = "/tmp/#{get_random_string(10)}"
 
   defp execute(command_list) when length(command_list) > 2 do
-    tmp_file = "/tmp/chatur.movement.commands"
     commands = command_list
     |> Enum.map(fn xy -> Input.mouse_format(xy) end)
     |> Enum.join("\n")
-    File.write(tmp_file, commands)
-    Shell.execute("bash", "#{tmp_file}")
-    # File.rm_rf(@tmp_file)
+    Input.execute_commands(commands)
   end
 
   defp execute(command_list) when length(command_list) < 3 do
     command_list
-    |> Enum.each(fn c -> Shell.execute(c) end)
+    |> Enum.each(fn c -> Shell.execute(Input.mouse_format(c)) end)
   end
 
 
