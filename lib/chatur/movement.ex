@@ -16,8 +16,11 @@ defmodule Movement do
   # tmp_file = "/tmp/#{get_random_string(10)}"
 
   defp execute(command_list) when length(command_list) > 2 do
-    tmp_file = "/tmp/chatur.movement.bash_commands"
-    File.write(tmp_file, Enum.join(command_list, "\n"))
+    tmp_file = "/tmp/chatur.movement.commands"
+    commands = command_list
+    |> Enum.map(fn xy -> Input.mouse_format(xy) end)
+    |> Enum.join("\n")
+    File.write(tmp_file, commands)
     Shell.execute("bash", "#{tmp_file}")
     # File.rm_rf(@tmp_file)
   end
@@ -42,14 +45,14 @@ defmodule Movement do
   def move(x, y) when abs(x) >= abs(y) do
     Logger.debug("Moving mouse to (#{x},#{y}) relatively")
     list = get_moves(x, y)
-    |> Enum.reduce([], fn ({x, y}, acc) -> ["xdotool mousemove_relative -- #{x} #{y}" | acc] end)
+    |> Enum.reduce([], fn ({x, y}, acc) -> ["#{x} #{y}" | acc] end)
     execute(list)
   end
 
   def move(x, y) when abs(x) < abs(y) do
     Logger.debug("Moving mouse to (#{y},#{x}) relatively")
     list = get_moves(y, x)
-    |> Enum.reduce([], fn ({y, x}, acc) -> ["xdotool mousemove_relative -- #{x} #{y}" | acc] end)
+    |> Enum.reduce([], fn ({y, x}, acc) -> ["#{x} #{y}" | acc] end)
     execute(list)
   end
 
@@ -89,53 +92,91 @@ defmodule Movement do
   end
 
   def jump() do
-    wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-    Shell.execute("xdotool key --window #{wid} space")
+    case Input.is_active() do
+      false -> :err
+      true -> Input.type(" ")
+      wid -> Input.type(" ", wid)
+    end
   end
 
   def jump_throw() do
-    wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-
-    Shell.execute("xdotool mousedown --window #{wid} 1")
-    Process.sleep(100)
-    Shell.execute("xdotool mouseup --window #{wid} 1")
-    Shell.execute("xdotool key --window #{wid} space")
+    case Input.is_active() do
+      false -> :err
+      wid ->
+        Input.send_input(:mouse, :down, :left, wid)
+        Process.sleep(100)
+        Input.send_input(:mouse, :up, :left, wid)
+        Input.type(" ", wid)
+    end
   end
 
   def walk_jump_throw(duration \\ 100) do
-    wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-
-    Shell.execute("xdotool mousedown --window #{wid} 1")
-    Process.sleep(100)
-    Shell.execute("xdotool keydown --window #{wid} W")
-    Process.sleep(duration)
-    Shell.execute("xdotool mouseup --window #{wid} 1")
-    Shell.execute("xdotool key --window #{wid} space")
-    Shell.execute("xdotool keyup --window #{wid} W")
+    case Input.is_active() do
+      false -> :err
+      wid ->
+        Input.send_input(:mouse, :down, :left, wid)
+        Process.sleep(100)
+        Input.send_input(:key, :down, "W", wid)
+        Process.sleep(duration)
+        Input.send_input(:mouse, :up, :left, wid)
+        Input.type(" ", wid)
+        Input.send_input(:key, :up, "W", wid)
+    end
   end
 
   def run_jump_throw(duration \\ 100) do
-    wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-
-    Shell.execute("xdotool mousedown --window #{wid} 1")
-    Process.sleep(100)
-    Shell.execute("xdotool keydown --window #{wid} w")
-    Process.sleep(duration)
-    Shell.execute("xdotool mouseup --window #{wid} 1")
-    Shell.execute("xdotool key --window #{wid} space")
-    Shell.execute("xdotool keyup --window #{wid} w")
+    case Input.is_active() do
+      false -> :err
+      wid ->
+        Input.send_input(:mouse, :down, :left, wid)
+        Process.sleep(100)
+        Input.send_input(:key, :down, "w", wid)
+        Process.sleep(duration)
+        Input.send_input(:mouse, :up, :left, wid)
+        Input.type(" ", wid)
+        Input.send_input(:key, :up, "w", wid)
+    end
   end
 
   def walk(duration \\ 100) do
-    wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-    Shell.execute("xdotool keydown --window #{wid} shift+w")
-    Process.sleep(duration)
-    Shell.execute("xdotool keyup --window #{wid} shift+w")
+    case Input.is_active() do
+      false -> :err
+      wid ->
+        Input.send_input(:key, :down, "W", wid)
+        Process.sleep(duration)
+        Input.send_input(:key, :up, "W", wid)
+    end
+  end
+
+  def run(duration \\ 100) do
+    case Input.is_active() do
+      false -> :err
+      wid ->
+        Input.send_input(:key, :down, "w", wid)
+        Process.sleep(duration)
+        Input.send_input(:key, :up, "w", wid)
+    end
   end
 
   def fire(click \\ 1) do
-    wid = String.trim(Shell.execute("xdotool search --class csgo_linux64"))
-    Shell.execute("xdotool click --window #{wid} #{click}")
+    case Input.is_active() do
+      false -> :err
+      wid ->
+        case click do
+          1 ->
+            Input.send_input(:mouse, :click, :left, wid)
+          2 ->
+            Input.send_input(:mouse, :click, :right, wid)
+          3 ->
+            Input.send_input(:mouse, :down, :left, wid)
+            Input.send_input(:mouse, :down, :right, wid)
+            Input.send_input(:mouse, :up, :left, wid)
+            Input.send_input(:mouse, :up, :right, wid)
+          _ ->
+            Logger.warn("unknown click #{inspect click}")
+            :err
+        end
+    end
   end
 
   def throw_nade(nade) do
@@ -150,8 +191,7 @@ defmodule Movement do
       nade.lmouse -> fire(1)
       nade.rmouse -> fire(2)
       nade.lmouse && nade.rmouse ->
-        fire(1)
-        fire(2)
+        fire(3)
       true -> fire()
     end
   end

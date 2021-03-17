@@ -3,7 +3,7 @@ use Mix.Config
 # Configure your database
 config :chatur, Chatur.Repo,
   username: "postgres",
-  password: "hacktheplanet",
+  password: "postgres",
   database: "chatur_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,

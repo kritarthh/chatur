@@ -14,8 +14,8 @@ defmodule LogReader do
     # open the log file and set the pointer to the end so that we only grab
     # new log messages
     # File.rm(@log_file)
+    File.rm_rf(@log_file)
     File.touch(@log_file)
-    Shell.execute("truncate -s 0 #{@log_file}")
     Console.execute("con_logfile csgo.log")
     {:ok, fp} = File.open(@log_file, [:read])
     :file.position(fp, :eof)

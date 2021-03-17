@@ -330,7 +330,7 @@ defmodule Nade do
     |> String.slice(1..-1)
     text = if overlay_text == "", do: "No nades found", else: overlay_text
     Logger.info("Overlay text: #{text}")
-    spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./noptions \""<>text<>"\""]) end)
+    # spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./external/noptions \""<>text<>"\""]) end)
     :ok
   end
 

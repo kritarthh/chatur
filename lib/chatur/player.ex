@@ -1,10 +1,13 @@
 defmodule Player do
+  require Logger
+
   use GenServer
 
   defstruct [location: %Location{}, map: "", team: ""]
 
   require Logger
   require Integer
+
 
   def flush() do
     receive do
