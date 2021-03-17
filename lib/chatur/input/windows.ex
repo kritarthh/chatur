@@ -41,7 +41,7 @@ defmodule Input.Windows do
   end
 
   def get_tmp_file() do
-    "Z:\chatur.movement.commands"
+    "Z:/chatur.movement.commands"
   end
 
   def execute_file(filename) do

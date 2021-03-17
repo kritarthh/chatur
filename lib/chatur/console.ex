@@ -4,7 +4,7 @@ defmodule CrossPlatform.Console do
     case :os.type do
       {:win32, _} ->
         quote do
-          @exec_file "Z:\say.cfg"
+          @exec_file "Z:/say.cfg"
         end
       {:unix, :linux} ->
         quote do

@@ -4,7 +4,7 @@ defmodule CrossPlatform.Reader do
     case :os.type do
       {:win32, _} ->
         quote do
-          @log_file "Z:\chatur_console.log"
+          @log_file "Z:/chatur_console.log"
         end
       {:unix, :linux} ->
         quote do
