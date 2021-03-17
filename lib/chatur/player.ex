@@ -47,6 +47,7 @@ defmodule Player do
       Console.execute("bind #{k} \"echo #{k}\"")
     end
     Console.execute("bind C \"echo show_nade_options\"")
+    Console.execute("bind X \"echo stop_movement\"")
     Console.execute('alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow"')
   end
 

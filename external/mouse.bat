@@ -15,7 +15,7 @@ if not exist "%csc%" (
 
 if not exist "%~n0.exe" (
    call %csc% /nologo /warn:0 /out:"%~n0.exe" "%~dpsfnx0" || (
-      exit /b %errorlevel% 
+      exit /b %errorlevel%
    )
 )
 %~n0.exe %*
@@ -174,13 +174,13 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             InputKeyboard,
             InputHardware
         }
-		
+
 		enum SystemMetric
 		{
 		  SM_CXSCREEN = 0,
 		  SM_CYSCREEN = 1,
 		}
-		
+
 		static int CalculateAbsoluteCoordinateX(int x)
 		{
 		  return (x * 65536) / GetSystemMetrics(SystemMetric.SM_CXSCREEN);
@@ -248,7 +248,7 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_LEFTUP;
             SendInput(1, ref mouseInput, Marshal.SizeOf(mouseInput));
         }
-        
+
 
         //There's conflict between negative DWOR values and UInt32 so there are two methods
         // for scrolling
@@ -286,13 +286,13 @@ public static Keys ConvertCharToVirtualKey(char ch) {
                     shift = true;
                     vKCode ^= Keys.Shift;
                 }
-                
+
                 if (keydown) {
                     if (shift) {
                         keyInput.mkhi.ki.wScan = MapVirtualKey((uint)Keys.ShiftKey, 0);
                         kbInput.Add(keyInput);
                     }
-        
+
                     keyInput.mkhi.ki.wScan = MapVirtualKey((uint)vKCode, 0);
                     kbInput.Add(keyInput);
                 }
@@ -314,32 +314,48 @@ public static Keys ConvertCharToVirtualKey(char ch) {
         }
 
 
-        static void ClickLeftMouseButton()
+        static void PressLeftMouseButton()
         {
-
             INPUT mouseInput = new INPUT();
-
             mouseInput.type = SendInputEventType.InputMouse;
             mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_LEFTDOWN;
             SendInput(1, ref mouseInput, Marshal.SizeOf(mouseInput));
-
-            //mouseInput.type = SendInputEventType.InputMouse;
-            mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_LEFTUP;
-            SendInput(1, ref mouseInput, Marshal.SizeOf(mouseInput));
-
         }
-        static void ClickRightMouseButton()
+
+        static void ReleaseLeftMouseButton()
         {
             INPUT mouseInput = new INPUT();
+            mouseInput.type = SendInputEventType.InputMouse;
+            mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_LEFTUP;
+            SendInput(1, ref mouseInput, Marshal.SizeOf(mouseInput));
+        }
 
+        static void PressRightMouseButton()
+        {
+            INPUT mouseInput = new INPUT();
             mouseInput.type = SendInputEventType.InputMouse;
             mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_RIGHTDOWN;
             SendInput(1, ref mouseInput, Marshal.SizeOf(mouseInput));
+        }
 
-            //mouseInput.type = SendInputEventType.InputMouse;
+        static void ReleaseRightMouseButton()
+        {
+            INPUT mouseInput = new INPUT();
+            mouseInput.type = SendInputEventType.InputMouse;
             mouseInput.mkhi.mi.dwFlags = MouseEventFlags.MOUSEEVENTF_RIGHTUP;
             SendInput(1, ref mouseInput, Marshal.SizeOf(mouseInput));
+        }
 
+         static void ClickLeftMouseButton()
+        {
+            PressLeftMouseButton();
+            ReleaseLeftMouseButton();
+        }
+
+        static void ClickRightMouseButton()
+        {
+            PressRightMouseButton();
+            ReleaseRightMouseButton();
         }
 
 
@@ -454,6 +470,14 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             {
                 ClickLeftMouseButton();
             }
+            else if (args[0].ToLower() == "press")
+            {
+                PressLeftMouseButton();
+            }
+            else if (args[0].ToLower() == "release")
+            {
+                ReleaseLeftMouseButton();
+            }
             else if (args[0].ToLower() == "position")
             {
                 getCursorPos();
@@ -461,6 +485,14 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             else if (args[0].ToLower() == "rightclick")
             {
                 ClickRightMouseButton();
+            }
+            else if (args[0].ToLower() == "rightpress")
+            {
+                PressRightMouseButton();
+            }
+            else if (args[0].ToLower() == "rightrelease")
+            {
+                ReleaseRightMouseButton();
             }
             else if (args[0].ToLower() == "scrollup")
             {
@@ -483,8 +515,11 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             else if (args[0].ToLower() == "moveby")
             {
                 CheckArgs(args);
-                int[] xy = parser(args[1]);
-                MoveMouseBy(xy[0], xy[1]);
+                String[] movements= args[1].Split(',');
+                foreach(String movement in movements) {
+                    int[] xy = parser(movement);
+                    MoveMouseBy(xy[0], xy[1]);
+                }
             }
             else if (args[0].ToLower() == "dragto")
             {
