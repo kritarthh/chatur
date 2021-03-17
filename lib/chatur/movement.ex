@@ -18,7 +18,6 @@ defmodule Movement do
   defp execute(command_list) when length(command_list) > 2 do
     commands = command_list
     |> Enum.map(fn xy -> Input.mouse_format(xy) end)
-    |> Enum.join("\n")
     Input.execute_commands(commands)
   end
 

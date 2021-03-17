@@ -37,7 +37,7 @@ defmodule Input.Windows do
   end
 
   def format(xspacey) do
-    "cmd.exe /c mouse.exe moveBy #{String.replace(xspacey, " ", "x")}"
+    "mouse.exe moveBy #{String.replace(xspacey, " ", "x")}"
   end
 
   def get_tmp_file() do
