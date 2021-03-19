@@ -5,6 +5,10 @@ defmodule Input.Windows do
     "csgo::Counter-Strike: Global Offensive" == String.trim(Shell.execute("cmd.exe /c window.exe"))
   end
 
+  def get_text_command(text, wid) do
+    "mouse.exe type \"#{text}\""
+  end
+
   def send_text(text, _) do
     Shell.execute("cmd.exe", ["/c", "mouse.exe", "type", "#{text}"])
   end

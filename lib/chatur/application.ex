@@ -17,6 +17,7 @@ defmodule Chatur.Application do
       ChaturWeb.Endpoint,
       # Start a worker by calling: Chatur.Worker.start_link(arg)
       # {Chatur.Worker, arg}
+      {InputPort, name: InputPort},
       {Location, name: Location},
       {LogReader, name: LogReader},
       {LogDispatcher, name: LogDispatcher},

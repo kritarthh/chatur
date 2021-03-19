@@ -6,8 +6,25 @@ defmodule Input.Linux do
     if wid == "", do: false, else: wid
   end
 
+  def get_text_command(text, wid) do
+    "xdotool type --window #{wid} \"#{text}\""
+  end
+
   def send_text(text, wid) do
     Shell.execute("xdotool", ["type", "--window", "#{wid}", "#{text}"])
+  end
+
+  def get_mouse_command(direction, button, wid) do
+    case direction do
+      :up ->
+        "xdotool mouseup --window #{wid} #{if button == :right, do: 2, else: 1}"
+      :down ->
+        "xdotool mousedown --window #{wid} #{if button == :right, do: 2, else: 1}"
+      :click ->
+        "xdotool click --window #{wid} #{if button == :right, do: 2, else: 1}"
+      _ ->
+        Logger.warn("unknown direction #{inspect direction}")
+    end
   end
 
   def send_mouse(direction, button, wid) do
@@ -18,6 +35,19 @@ defmodule Input.Linux do
         Shell.execute("xdotool mousedown --window #{wid} #{if button == :right, do: 2, else: 1}")
       :click ->
         Shell.execute("xdotool click --window #{wid} #{if button == :right, do: 2, else: 1}")
+      _ ->
+        Logger.warn("unknown direction #{inspect direction}")
+    end
+  end
+
+  def get_key_command(direction, key, wid) do
+    case direction do
+      :down ->
+        "xdotool keydown --window #{wid} \"#{key}\""
+      :up ->
+        "xdotool keyup --window #{wid} \"#{key}\""
+      :click ->
+        "xdotool key --window #{wid} \"#{key}\""
       _ ->
         Logger.warn("unknown direction #{inspect direction}")
     end
