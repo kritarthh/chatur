@@ -31,6 +31,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Text;
+using System.Linq;
 
 namespace MouseMover
 {
@@ -54,8 +56,8 @@ namespace MouseMover
         static extern IntPtr CopyImage(IntPtr hImage, uint uType, int cxDesired, int cyDesired, uint fuFlags);
         [DllImport("user32.dll")]
         static extern bool CopyRect(out Rect lprcDst, [In] ref Rect lprcSrc);
-		[DllImport("user32.dll")]
-		static extern int GetSystemMetrics(SystemMetric smIndex);
+        [DllImport("user32.dll")]
+        static extern int GetSystemMetrics(SystemMetric smIndex);
         [DllImport("user32.dll")]
         static extern short VkKeyScan(char ch);
         [DllImport("user32.dll")]
@@ -175,21 +177,21 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             InputHardware
         }
 
-		enum SystemMetric
-		{
-		  SM_CXSCREEN = 0,
-		  SM_CYSCREEN = 1,
-		}
+        enum SystemMetric
+        {
+          SM_CXSCREEN = 0,
+          SM_CYSCREEN = 1,
+        }
 
-		static int CalculateAbsoluteCoordinateX(int x)
-		{
-		  return (x * 65536) / GetSystemMetrics(SystemMetric.SM_CXSCREEN);
-		}
+        static int CalculateAbsoluteCoordinateX(int x)
+        {
+          return (x * 65536) / GetSystemMetrics(SystemMetric.SM_CXSCREEN);
+        }
 
-		static int CalculateAbsoluteCoordinateY(int y)
-		{
-		  return (y * 65536) / GetSystemMetrics(SystemMetric.SM_CYSCREEN);
-		}
+        static int CalculateAbsoluteCoordinateY(int y)
+        {
+          return (y * 65536) / GetSystemMetrics(SystemMetric.SM_CYSCREEN);
+        }
 
         static void DoubleClick()
         {
@@ -451,6 +453,67 @@ public static Keys ConvertCharToVirtualKey(char ch) {
             Console.WriteLine("  in case you are using batch-wrapped script.");
 
         }
+        public static IEnumerable<string> SplitArgs(string commandLine)
+        {
+            var result = new StringBuilder();
+            var quoted = false;
+            var escaped = false;
+            var started = false;
+            var allowcaret = false;
+            for (int i = 0; i < commandLine.Length; i++)
+            {
+                var chr = commandLine[i];
+
+                if (chr == '^' && !quoted)
+                {
+                    if (allowcaret)
+                    {
+                        result.Append(chr);
+                        started = true;
+                        escaped = false;
+                        allowcaret = false;
+                    }
+                    else if (i + 1 < commandLine.Length && commandLine[i + 1] == '^')
+                    {
+                        allowcaret = true;
+                    }
+                    else if (i + 1 == commandLine.Length)
+                    {
+                        result.Append(chr);
+                        started = true;
+                        escaped = false;
+                    }
+                }
+                else if (escaped)
+                {
+                    result.Append(chr);
+                    started = true;
+                    escaped = false;
+                }
+                else if (chr == '"')
+                {
+                    quoted = !quoted;
+                    started = true;
+                }
+                else if (chr == '\\' && i + 1 < commandLine.Length && commandLine[i + 1] == '"')
+                {
+                    escaped = true;
+                }
+                else if (chr == ' ' && !quoted)
+                {
+                    if (started) yield return result.ToString();
+                    result.Clear();
+                    started = false;
+                }
+                else
+                {
+                    result.Append(chr);
+                    started = true;
+                }
+            }
+            if (started) yield return result.ToString();
+        }
+
 
         public static void Main(String[] args) {
             if (args.Length == 0) {
@@ -462,92 +525,91 @@ public static Keys ConvertCharToVirtualKey(char ch) {
                 System.Environment.Exit(0);
             }
 
-            if (args[0].ToLower() == "doubleclick")
-            {
-                DoubleClick();
-            }
-            else if (args[0].ToLower() == "click" || args[0].ToLower() == "leftclick")
-            {
-                ClickLeftMouseButton();
-            }
-            else if (args[0].ToLower() == "press")
-            {
-                PressLeftMouseButton();
-            }
-            else if (args[0].ToLower() == "release")
-            {
-                ReleaseLeftMouseButton();
-            }
-            else if (args[0].ToLower() == "position")
-            {
-                getCursorPos();
-            }
-            else if (args[0].ToLower() == "rightclick")
-            {
-                ClickRightMouseButton();
-            }
-            else if (args[0].ToLower() == "rightpress")
-            {
-                PressRightMouseButton();
-            }
-            else if (args[0].ToLower() == "rightrelease")
-            {
-                ReleaseRightMouseButton();
-            }
-            else if (args[0].ToLower() == "scrollup")
-            {
-                CheckArgs(args);
-                ScrollCaller(args[1], true);
-
-            }
-            else if (args[0].ToLower() == "scrolldown")
-            {
-                CheckArgs(args);
-                ScrollCaller(args[1], false);
-
-            }
-            else if (args[0].ToLower() == "moveto")
-            {
-                CheckArgs(args);
-                int[] xy = parser(args[1]);
-                MoveMouseTo(xy[0], xy[1]);
-            }
-            else if (args[0].ToLower() == "moveby")
-            {
-                CheckArgs(args);
-                String[] movements= args[1].Split(',');
-                foreach(String movement in movements) {
-                    int[] xy = parser(movement);
-                    MoveMouseBy(xy[0], xy[1]);
+            string line;
+            while(!string.IsNullOrEmpty(line = Console.ReadLine())) {
+                args = ((String[])SplitArgs(line).ToArray().Skip(1).ToArray());
+                if (args[0].ToLower() == "doubleclick")
+                {
+                    DoubleClick();
                 }
-            }
-            else if (args[0].ToLower() == "dragto")
-            {
-                CheckArgs(args);
-                int[] xy = parser(args[1]);
-                DragMouseTo(xy[0], xy[1]);
-            }
-            else if (args[0].ToLower() == "dragby")
-            {
-                CheckArgs(args);
-                int[] xy = parser(args[1]);
-                DragMouseBy(xy[0], xy[1]);
-            }
-            else if (args[0].ToLower() == "type")
-            {
-                TypeString(args[1]);
-            }
-            else if (args[0].ToLower() == "key")
-            {
-                TypeString(args[2], args[1] == "down", args[1] == "up");
-            }
-            else
-            {
-                Console.WriteLine("Invalid action : " + args[0]);
-                System.Environment.Exit(10);
+                else if (args[0].ToLower() == "click" || args[0].ToLower() == "leftclick")
+                {
+                    ClickLeftMouseButton();
+                }
+                else if (args[0].ToLower() == "press")
+                {
+                    PressLeftMouseButton();
+                }
+                else if (args[0].ToLower() == "release")
+                {
+                    ReleaseLeftMouseButton();
+                }
+                else if (args[0].ToLower() == "position")
+                {
+                    getCursorPos();
+                }
+                else if (args[0].ToLower() == "rightclick")
+                {
+                    ClickRightMouseButton();
+                }
+                else if (args[0].ToLower() == "rightpress")
+                {
+                    PressRightMouseButton();
+                }
+                else if (args[0].ToLower() == "rightrelease")
+                {
+                    ReleaseRightMouseButton();
+                }
+                else if (args[0].ToLower() == "scrollup")
+                {
+                    CheckArgs(args);
+                    ScrollCaller(args[1], true);
+
+                }
+                else if (args[0].ToLower() == "scrolldown")
+                {
+                    CheckArgs(args);
+                    ScrollCaller(args[1], false);
+
+                }
+                else if (args[0].ToLower() == "moveto")
+                {
+                    CheckArgs(args);
+                    int[] xy = parser(args[1]);
+                    MoveMouseTo(xy[0], xy[1]);
+                }
+                else if (args[0].ToLower() == "moveby")
+                {
+                    CheckArgs(args);
+                    String[] movements= args[1].Split(',');
+                    foreach(String movement in movements) {
+                        int[] xy = parser(movement);
+                        System.Threading.Thread.Sleep(10);
+                        MoveMouseBy(xy[0], xy[1]);
+                    }
+                }
+                else if (args[0].ToLower() == "dragto")
+                {
+                    CheckArgs(args);
+                    int[] xy = parser(args[1]);
+                    DragMouseTo(xy[0], xy[1]);
+                }
+                else if (args[0].ToLower() == "dragby")
+                {
+                    CheckArgs(args);
+                    int[] xy = parser(args[1]);
+                    DragMouseBy(xy[0], xy[1]);
+                }
+                else if (args[0].ToLower() == "type")
+                {
+                    TypeString(args[1]);
+                }
+                else if (args[0].ToLower() == "key")
+                {
+                    TypeString(args[2], args[1] == "down", args[1] == "up");
+                }
+                Console.WriteLine("ok");
             }
         }
-
-
     }
 }
