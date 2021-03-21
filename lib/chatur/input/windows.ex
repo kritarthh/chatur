@@ -13,6 +13,20 @@ defmodule Input.Windows do
     Shell.execute("cmd.exe", ["/c", "mouse.exe", "type", "#{text}"])
   end
 
+  def get_mouse_command(direction, button, _) do
+    case direction do
+      :up ->
+        "mouse.exe #{if button == :right, do: "right"}release"
+      :down ->
+        "mouse.exe #{if button == :right, do: "right"}press"
+      :click ->
+        "mouse.exe #{if button == :right, do: "right"}click"
+      _ ->
+        Logger.warn("unknown direction #{inspect direction}")
+        ""
+    end
+  end
+
   def send_mouse(direction, button, _) do
     case direction do
       :up ->
@@ -23,6 +37,20 @@ defmodule Input.Windows do
         Shell.execute("cmd.exe /c mouse.exe #{if button == :right, do: "right"}click")
       _ ->
         Logger.warn("unknown direction #{inspect direction}")
+    end
+  end
+
+  def get_key_command(direction, key, wid) do
+    case direction do
+      :up ->
+        "mouse.exe key up \"#{key}\""
+      :down ->
+        "mouse.exe key down \"#{key}\""
+      :click ->
+        "mouse.exe key down \"#{key}\"\nmouse.exe key up \"#{key}\""
+      _ ->
+        Logger.warn("unknown direction #{inspect direction}")
+        ""
     end
   end
 
