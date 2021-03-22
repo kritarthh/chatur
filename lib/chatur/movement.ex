@@ -15,11 +15,6 @@ defmodule Movement do
 
   # tmp_file = "/tmp/#{get_random_string(10)}"
 
-  defp execute(xy_list) do
-    command = Input.mouse_format(xy_list)
-    Input.execute_commands(command)
-  end
-
   defp get_moves(x, y) do
     lx = Enum.to_list 0..round(x)
     step = if x == 0, do: 1, else: y/x
@@ -31,22 +26,9 @@ defmodule Movement do
     |> Enum.map(fn [{x1, y1}, {x2, y2}] -> {x2 - x1, y2 - y1} end)
   end
 
-  def move(x, y) when abs(x) >= abs(y) do
-    Logger.debug("Moving mouse to (#{x},#{y}) relatively")
-    # list = get_moves(x, y)
-    # |> Enum.reduce([], fn ({x, y}, acc) -> ["#{x} #{y}" | acc] end)
-    list = ["#{x} #{y}"]
-    execute(list)
-  end
-
-  def move(x, y) when abs(x) < abs(y) do
-    Logger.debug("Moving mouse to (#{y},#{x}) relatively")
-    # list = get_moves(y, x)
-    # |> Enum.reduce([], fn ({y, x}, acc) -> ["#{x} #{y}" | acc] end)
-    # list = get_moves(x, y)
-    # |> Enum.reduce([], fn ({x, y}, acc) -> ["#{x} #{y}" | acc] end)
-    list = ["#{x} #{y}"]
-    execute(list)
+  def move(x, y) do
+    [command] = Input.mouse_format(["#{x} #{y}"])
+    Input.execute_command(command)
   end
 
   def kill() do

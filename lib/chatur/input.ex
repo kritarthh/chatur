@@ -142,6 +142,10 @@ defmodule Input do
     |> Enum.each(fn x -> InputPort.execute_command(x) end)
   end
 
+  def execute_command(command) do
+    execute_shell_command(command)
+  end
+
   def command() do
     @input_handler_command
   end

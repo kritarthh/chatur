@@ -78,4 +78,8 @@ defmodule Input.Linux do
   def execute_file(filename) do
     Shell.execute("bash #{filename}")
   end
+
+  def execute_shell_command(command) do
+    Shell.execute("bash -c #{command}")
+  end
 end
