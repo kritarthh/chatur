@@ -8,10 +8,10 @@ defmodule Mouse do
     |> Enum.slice(0..1)
     |> Enum.map(
     fn x -> x
-            |> String.split(":")
-            |> Enum.with_index
-            |> Enum.map_every(1, fn {y, idx} -> if Integer.is_odd(idx), do: String.to_integer(y), else: String.to_atom(y) end)
-            |> List.to_tuple
+    |> String.split(":")
+    |> Enum.with_index
+    |> Enum.map_every(1, fn {y, idx} -> if Integer.is_odd(idx), do: String.to_integer(y), else: String.to_atom(y) end)
+    |> List.to_tuple
     end
     )
     |> Enum.into(%{})
@@ -43,6 +43,6 @@ defmodule Mouse do
         approach(x, y, type, r)
     end
 
-   end
+  end
 
 end

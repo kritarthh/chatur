@@ -24,7 +24,7 @@ defmodule Player do
       %Location{alpha: _, beta: _} = l ->
         l
     after
-      1000 ->
+      2000 ->
         Logger.error("timed out, should not happen")
     end
   end

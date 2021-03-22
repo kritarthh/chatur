@@ -69,10 +69,12 @@ defmodule Input.Windows do
   end
 
   def format(xspacey_list) do
-    movements = xspacey_list
-    |> Enum.map(fn x -> String.replace(x, " ", "x") end)
-    |> Enum.join(",")
-    ["mouse.exe moveBy #{movements}"]
+    xspacey_list
+    |> Enum.map(fn x -> "external/humanmouse.exe -r #{Enum.at(["-g", "-a", "-f"], Enum.random(0..2))} -x #{String.replace(x, " ", " -y ")}" end)
+    # movements = xspacey_list
+    # |> Enum.map(fn x -> String.replace(x, " ", "x") end)
+    # |> Enum.join(",")
+    # ["mouse.exe moveBy #{movements}"]
   end
 
   def get_tmp_file() do

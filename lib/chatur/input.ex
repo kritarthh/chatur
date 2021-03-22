@@ -4,7 +4,7 @@ defmodule CrossPlatformInput do
     case :os.type do
       {:win32, _} ->
         quote do
-          @input_handler_command "external/mouse.exe"
+          @input_handler_command "external/mouse.exe start"
           import Input.Windows
         end
       {:unix, :linux} ->
@@ -54,6 +54,7 @@ defmodule InputPort do
   end
 
   def execute_command(command) do
+    Logger.debug("executing #{command}")
     send(InputPort, {:command, command, self()})
     receive do
       msg -> msg
@@ -69,7 +70,7 @@ defmodule InputPort do
       {_, {:data, err}} ->
         send(pid, err)
         {:noreply, state}
-      after 1_000 ->
+      after 2_000 ->
         Logger.warn("timed out waiting for command")
         send(pid, :err)
         {:noreply, state}

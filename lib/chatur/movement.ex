@@ -33,15 +33,19 @@ defmodule Movement do
 
   def move(x, y) when abs(x) >= abs(y) do
     Logger.debug("Moving mouse to (#{x},#{y}) relatively")
-    list = get_moves(x, y)
-    |> Enum.reduce([], fn ({x, y}, acc) -> ["#{x} #{y}" | acc] end)
+    # list = get_moves(x, y)
+    # |> Enum.reduce([], fn ({x, y}, acc) -> ["#{x} #{y}" | acc] end)
+    list = ["#{x} #{y}"]
     execute(list)
   end
 
   def move(x, y) when abs(x) < abs(y) do
     Logger.debug("Moving mouse to (#{y},#{x}) relatively")
-    list = get_moves(y, x)
-    |> Enum.reduce([], fn ({y, x}, acc) -> ["#{x} #{y}" | acc] end)
+    # list = get_moves(y, x)
+    # |> Enum.reduce([], fn ({y, x}, acc) -> ["#{x} #{y}" | acc] end)
+    # list = get_moves(x, y)
+    # |> Enum.reduce([], fn ({x, y}, acc) -> ["#{x} #{y}" | acc] end)
+    list = ["#{x} #{y}"]
     execute(list)
   end
 
@@ -55,7 +59,7 @@ defmodule Movement do
   defp sign(n) when n < 0, do: -1
   defp sign(n) when n >= 0, do: 1
 
-  def approach(l, r \\ 4, mr \\ 8192) do
+  def approach(l, r \\ 4, mr \\ 4096) do
     cl = Player.getpos()
     Logger.debug("Approaching (#{l.alpha}, #{l.beta}, #{l.gamma}) from (#{cl.alpha}, #{cl.beta}, #{cl.gamma})")
 
