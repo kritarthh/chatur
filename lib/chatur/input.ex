@@ -143,7 +143,7 @@ defmodule Input do
   end
 
   def execute_command(command) do
-    execute_shell_command(command)
+    execute_bin(command)
   end
 
   def command() do

@@ -85,8 +85,8 @@ defmodule Input.Windows do
     Shell.execute("cmd.exe /c #{filename}")
   end
 
-  def execute_shell_command(command) do
-    Shell.execute("cmd.exe /c #{command}")
+  def execute_bin(command) do
+    Shell.execute("#{command}")
   end
 
   def link() do
