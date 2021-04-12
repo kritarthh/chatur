@@ -41,12 +41,169 @@ defmodule Movement do
   defp sign(n) when n < 0, do: -1
   defp sign(n) when n >= 0, do: 1
 
+  def find_key(l, dx, dy, beta, wid) do
+    theta = cond do
+      dx == 0 ->
+        90
+      true ->
+        Math.rad2deg(Math.atan(dy/dx))
+    end
+    theta = theta + cond do
+      dx >= 0 ->
+        if dy >= 0 do
+          Logger.debug("QUADRANDT 1: correction 0 : theta = #{theta}")
+        else
+          Logger.debug("QUADRANDT 4: correction 0 : theta = #{theta}")
+        end
+        0
+      dx < 0 ->
+        if dy >= 0 do
+          Logger.debug("QUADRANDT 2: correction +180 : theta = #{theta + 180}")
+          180
+        else
+          Logger.debug("QUADRANDT 3: correction -180 : theta = #{theta - 180}")
+          -180
+        end
+    end
+    Logger.debug("beta=#{beta}, theta=#{theta}")
+    theta = theta - beta
+    Logger.debug("final theta=#{theta}")
+    theta = theta + cond do
+    theta > 180 ->
+      -360
+    theta < -180 ->
+      360
+    true ->
+      0
+    end
+    hyp = Math.sqrt(dx*dx + dy*dy)
+    sinx = Math.sin(theta)
+    cosx = Math.cos(theta)
+    cond do
+      theta >= 0 ->
+        if theta > 0 do
+          Input.send_input(:key, :up, "d", wid)
+          Input.send_input(:key, :up, "D", wid)
+          if abs(hyp * sinx) > 100 do
+            Input.send_input(:key, :down, "a", wid)
+          else
+            Input.send_input(:key, :down, "A", wid)
+            Input.send_input(:key, :up, "A", wid)
+          end
+          if theta <= 90 do
+            if theta < 90 do
+              Input.send_input(:key, :up, "s", wid)
+              Input.send_input(:key, :up, "S", wid)
+              if hyp * cosx > 100 do
+                Input.send_input(:key, :down, "w", wid)
+              else
+                Input.send_input(:key, :down, "W", wid)
+                Input.send_input(:key, :up, "W", wid)
+              end
+            end
+          else
+            Input.send_input(:key, :up, "w", wid)
+            Input.send_input(:key, :up, "W", wid)
+            if hyp * cosx > 100 do
+              Input.send_input(:key, :down, "s", wid)
+            else
+              Input.send_input(:key, :down, "S", wid)
+              Input.send_input(:key, :up, "S", wid)
+            end
+          end
+        end
+      theta < 0 ->
+        Input.send_input(:key, :up, "a", wid)
+        Input.send_input(:key, :up, "A", wid)
+        if abs(hyp * sinx) > 100 do
+          Input.send_input(:key, :down, "d", wid)
+        else
+          Input.send_input(:key, :down, "D", wid)
+          Input.send_input(:key, :up, "D", wid)
+        end
+        if theta >= -90 do
+          if theta > -90 do
+            Input.send_input(:key, :up, "s", wid)
+            Input.send_input(:key, :up, "S", wid)
+            if abs(hyp * cosx) > 100 do
+            Input.send_input(:key, :down, "w", wid)
+            else
+            Input.send_input(:key, :down, "W", wid)
+            Input.send_input(:key, :up, "W", wid)
+            end
+          end
+        else
+          Input.send_input(:key, :up, "w", wid)
+          Input.send_input(:key, :up, "W", wid)
+          if abs(hyp * cosx) > 100 do
+          Input.send_input(:key, :down, "s", wid)
+          else
+          Input.send_input(:key, :down, "S", wid)
+          Input.send_input(:key, :up, "S", wid)
+          end
+        end
+    end
+  end
+
+  def approach_position(l) do
+    cl = Player.getpos()
+    Logger.debug("Approaching (#{l.x}, #{l.y}, #{l.z}) from (#{cl.x}, #{cl.y}, #{cl.z})")
+
+    dx = l.x - cl.x
+    dy = l.y - cl.y
+
+    cond do
+      dx == 0 ->
+        Logger.debug("on x")
+      abs(dx) > 10 ->
+        Logger.debug("far away in x")
+      abs(dx) < 10 ->
+        Logger.debug("closer in x")
+    end
+
+    cond do
+      dy == 0 ->
+        Logger.debug("on y")
+      abs(dy) > 10 ->
+        Logger.debug("far away in y")
+      abs(dy) < 10 ->
+        Logger.debug("closer in y")
+    end
+
+    wid = Input.is_active()
+
+    cond do
+      abs(dx) <= 1 && abs(dy) <= 1 ->
+        Input.send_input(:key, :up, "w", wid)
+        Input.send_input(:key, :up, "a", wid)
+        Input.send_input(:key, :up, "s", wid)
+        Input.send_input(:key, :up, "d", wid)
+        Input.send_input(:key, :up, "W", wid)
+        Input.send_input(:key, :up, "A", wid)
+        Input.send_input(:key, :up, "S", wid)
+        Input.send_input(:key, :up, "D", wid)
+        nil
+      dx != 0 || dy != 0 ->
+        find_key(cl, dx, dy, cl.beta, wid)
+        approach_position(l)
+    end
+  end
+
   def approach(l, r \\ 4, mr \\ 4096) do
     cl = Player.getpos()
     Logger.debug("Approaching (#{l.alpha}, #{l.beta}, #{l.gamma}) from (#{cl.alpha}, #{cl.beta}, #{cl.gamma})")
 
     dx = l.beta - cl.beta
     dy = l.alpha - cl.alpha
+
+    dx = dx + cond do
+    dx > 180 ->
+      -360
+    dx < -180 ->
+      360
+    true ->
+      0
+    end
 
     # rdx = (r * :math.pow(dx, 2) * sign(dx))
     # rdy = (r * :math.pow(dy, 2) * sign(dy))
@@ -74,62 +231,54 @@ defmodule Movement do
     end
   end
 
-  def jump_throw() do
+  def jump_throw(mb \\ :left) do
     case Input.is_active() do
       false -> :err
       wid ->
-        Input.send_input(:mouse, :down, :left, wid)
+        Input.send_input(:mouse, :down, mb, wid)
         Process.sleep(100)
-        Input.send_input(:mouse, :up, :left, wid)
+        Input.send_input(:mouse, :up, mb, wid)
         Input.type(" ", wid)
     end
   end
 
-  def walk_jump_throw(duration \\ 100) do
+  def move_throw(duration \\ 100, jump \\ true, lmb \\ true, rmb \\ false, walk \\ false, move_key \\ "w") do
     case Input.is_active() do
       false -> :err
       wid ->
-        Input.send_input(:mouse, :down, :left, wid)
+        if lmb, do: Input.send_input(:mouse, :down, :left, wid)
+        if rmb, do: Input.send_input(:mouse, :down, :right, wid)
         Process.sleep(100)
-        Input.send_input(:key, :down, "W", wid)
-        Process.sleep(duration)
-        Input.send_input(:mouse, :up, :left, wid)
-        Input.type(" ", wid)
-        Input.send_input(:key, :up, "W", wid)
+        if duration > 0 do
+          Input.send_input(:key, :down, "#{if walk, do: String.upcase(move_key), else: move_key}", wid)
+          Process.sleep(duration)
+        end
+        if lmb, do: Input.send_input(:mouse, :up, :left, wid)
+        if rmb, do: Input.send_input(:mouse, :up, :right, wid)
+        if jump, do: Input.type(" ", wid)
+        if duration > 0 do
+          Input.send_input(:key, :up, "#{if walk, do: String.upcase(move_key), else: move_key}", wid)
+        end
     end
   end
 
-  def run_jump_throw(duration \\ 100) do
+  def walk(duration \\ 100, key \\ "W") do
     case Input.is_active() do
       false -> :err
       wid ->
-        Input.send_input(:mouse, :down, :left, wid)
-        Process.sleep(100)
-        Input.send_input(:key, :down, "w", wid)
+        Input.send_input(:key, :down, key, wid)
         Process.sleep(duration)
-        Input.send_input(:mouse, :up, :left, wid)
-        Input.type(" ", wid)
-        Input.send_input(:key, :up, "w", wid)
+        Input.send_input(:key, :up, key, wid)
     end
   end
 
-  def walk(duration \\ 100) do
+  def run(duration \\ 100, key \\ "w") do
     case Input.is_active() do
       false -> :err
       wid ->
-        Input.send_input(:key, :down, "W", wid)
+        Input.send_input(:key, :down, key, wid)
         Process.sleep(duration)
-        Input.send_input(:key, :up, "W", wid)
-    end
-  end
-
-  def run(duration \\ 100) do
-    case Input.is_active() do
-      false -> :err
-      wid ->
-        Input.send_input(:key, :down, "w", wid)
-        Process.sleep(duration)
-        Input.send_input(:key, :up, "w", wid)
+        Input.send_input(:key, :up, key, wid)
     end
   end
 
@@ -157,17 +306,10 @@ defmodule Movement do
   def throw_nade(nade) do
     Logger.debug("Throw nade")
     cond do
-      nade.jump ->
-        cond do
-          nade.walk > 0 -> walk_jump_throw(nade.walk)
-          nade.run > 0 -> run_jump_throw(nade.run)
-          true -> jump_throw()
-        end
-      nade.lmouse -> fire(1)
-      nade.rmouse -> fire(2)
-      nade.lmouse && nade.rmouse ->
-        fire(3)
-      true -> fire()
+      nade.walk > 0 -> move_throw(nade.walk, nade.jump, nade.lmouse, nade.rmouse, true)
+      nade.run > 0 -> move_throw(nade.run, nade.jump, nade.lmouse, nade.rmouse)
+      nade.jump -> move_throw(0, true, nade.lmouse, nade.rmouse)
+      true -> move_throw(0, false, nade.lmouse, nade.rmouse)
     end
   end
 
@@ -188,6 +330,19 @@ defmodule Movement do
     {:noreply, state}
   end
 
+  def handle_info(:approach_position_test, state) do
+    # approach_position(Nade.closest.location)
+    l = Nade.closest.location
+    approach_position(l)
+    {:noreply, state}
+  end
+
+  def handle_info({:approach_position, l}, state) do
+    Logger.debug("Approach position (#{l.x}, #{l.y})")
+    approach_position(l)
+    {:noreply, state}
+  end
+
   def handle_info({:pronade, nade}, state) do
     approach(nade.location)
     throw_nade(nade)
@@ -202,7 +357,7 @@ defmodule Movement do
   end
 
   def handle_info(msg, state) do
-    Logger.warn("Unwanted message #{msg}")
+    Logger.warn("Unwanted message #{inspect msg}")
     {:noreply, state}
   end
 

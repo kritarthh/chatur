@@ -68,7 +68,7 @@ defmodule Input.Linux do
 
   def format(xspacey_list) do
     xspacey_list
-    |> Enum.map(fn x -> "external/humanmouse.bin -r #{Enum.at(["-g", "-a", "-f"], Enum.random(0..2))} -x #{String.replace(x, " ", " -y ")}" end)
+    |> Enum.map(fn x -> "#{File.cwd!}/external/humanmouse.bin -r #{Enum.at(["-a", "-f"], Enum.random(0..1))} -x #{String.replace(x, " ", " -y ")}" end)
   end
 
   def get_tmp_file() do

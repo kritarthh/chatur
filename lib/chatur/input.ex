@@ -54,7 +54,6 @@ defmodule InputPort do
   end
 
   def execute_command(command) do
-    Logger.debug("executing #{command}")
     send(InputPort, {:command, command, self()})
     receive do
       msg -> msg

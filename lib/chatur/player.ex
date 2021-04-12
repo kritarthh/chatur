@@ -33,8 +33,24 @@ defmodule Player do
     GenServer.call(Player, :get_map)
   end
 
+  defp binds() do
+    for k <- Nade.keys() do
+      Console.execute(~s/bind #{k} "echo #{k}"/)
+    end
+    Console.execute(~s/bind I "echo show_nade_options"/)
+    Console.execute(~s/bind O "echo stop_movement"/)
+    Console.execute(~s/alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow"/)
+    Console.execute("con_logfile cfg/chatur/console.log")
+    Console.execute(~s/bind \] "use weapon_knife; use weapon_c4; drop; lastinv; say_team I HAVE DROPPED THE BOMB"/)
+    Console.execute(~s/bind ' "echo usbreset"/)
+
+    Console.execute(~s/con_filter_text_out "Execing config"/)
+    Console.execute("net_client_steamdatagram_enable_override 1")
+  end
+
   def update() do
     # {:reply, :ok, l} = send(Player, :get_location)
+    binds()
     send(Player, {:get_status, self()})
   end
 
@@ -42,19 +58,9 @@ defmodule Player do
     GenServer.start_link(__MODULE__, :ok, name: Player)
   end
 
-  defp binds() do
-    for k <- Nade.keys() do
-      Console.execute("bind #{k} \"echo #{k}\"")
-    end
-    Console.execute("bind C \"echo show_nade_options\"")
-    Console.execute("bind X \"echo stop_movement\"")
-    Console.execute('alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow"')
-  end
-
   def init(:ok) do
     # open the log file and set the pointer to the end so that we only grab
     # new log messages
-    binds()
     update()
     {:ok, %Player{}}
   end
@@ -74,7 +80,7 @@ defmodule Player do
         send(pid, location)
         {:noreply, Map.put(state, :location, location)}
     after
-      500 ->
+      1000 ->
         Logger.warn("Timed out waiting for location, use last")
         send(pid, state.location)
         {:noreply, state}
@@ -103,7 +109,7 @@ defmodule Player do
   end
 
   def handle_info({:location, l}, state) do
-    Logger.warn("Unwanted location (#{l.alpha}, #{l.beta})")
+    Logger.warn("Unwanted location (#{l})")
     {:noreply, state}
   end
 

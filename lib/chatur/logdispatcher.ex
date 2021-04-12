@@ -38,6 +38,10 @@ defmodule LogDispatcher do
         Movement.kill()
       line == "show_nade_options" ->
         spawn(fn -> Nade.overlay() end)
+      line == "test" ->
+        send(Movement, :approach_position_test)
+      line == "usbreset" ->
+        Shell.execute("sudo /home/blackie/workspace/personal/scripts/usbreset.sh")
       Nade.key(line) ->
         spawn(fn -> Nade.overlay(line) end                            )
       true ->

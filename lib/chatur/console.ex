@@ -19,6 +19,7 @@ end
 
 defmodule Console do
   use CrossPlatform.Console
+  require Logger
   @exec_key "p"
 
   def execute(command) do
@@ -26,7 +27,9 @@ defmodule Console do
     File.write!(@exec_file, command)
     case Input.is_active() do
       false -> :err
-      wid -> Input.type(@exec_key, wid)
+      wid ->
+        Logger.debug("executing \"#{command}\"")
+        Input.type(@exec_key, wid)
     end
   end
 
