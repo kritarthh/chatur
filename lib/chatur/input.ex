@@ -146,6 +146,6 @@ defmodule Input do
   end
 
   def command() do
-    "#{File.cwd!}/#{@input_handler_command}"
+    "#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/#{@input_handler_command}"
   end
 end

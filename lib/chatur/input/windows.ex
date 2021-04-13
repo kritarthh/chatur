@@ -2,7 +2,7 @@ defmodule Input.Windows do
   require Logger
 
   def is_ready() do
-    "csgo::Counter-Strike: Global Offensive" == String.trim(Shell.execute("external/window.exe"))
+    "csgo::Counter-Strike: Global Offensive" == String.trim(Shell.execute("#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/external/window.exe"))
   end
 
   def get_text_command(text, wid) do
@@ -70,7 +70,7 @@ defmodule Input.Windows do
 
   def format(xspacey_list) do
     xspacey_list
-    |> Enum.map(fn x -> "external/humanmouse.exe -r #{Enum.at(["-a", "-f"], Enum.random(0..1))} -x #{String.replace(x, " ", " -y ")}" end)
+    |> Enum.map(fn x -> "#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/external/humanmouse.exe -r #{Enum.at(["-a", "-f"], Enum.random(0..1))} -x #{String.replace(x, " ", " -y ")}" end)
     # movements = xspacey_list
     # |> Enum.map(fn x -> String.replace(x, " ", "x") end)
     # |> Enum.join(",")

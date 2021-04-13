@@ -1,7 +1,22 @@
 defmodule Nade do
   require Logger
 
-  defstruct [map: "", code: "", dest: "", description: "", location: %Location{}, run: 0, walk: 0, jump: false, crouch: false, lmouse: true, rmouse: false, tolerance: 10]
+  defstruct [
+    map: "",
+    code: "",
+    src: "",
+    dest: "",
+    description: "",
+    location: %Location{},
+    direction: "w",
+    run: 0,
+    walk: 0,
+    jump: false,
+    crouch: false,
+    lmouse: true,
+    rmouse: false,
+    tolerance: 10
+  ]
 
   defimpl String.Chars, for: Nade do
     def to_string(n) do

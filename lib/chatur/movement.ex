@@ -306,10 +306,10 @@ defmodule Movement do
   def throw_nade(nade) do
     Logger.debug("Throw nade")
     cond do
-      nade.walk > 0 -> move_throw(nade.walk, nade.jump, nade.lmouse, nade.rmouse, true)
-      nade.run > 0 -> move_throw(nade.run, nade.jump, nade.lmouse, nade.rmouse)
-      nade.jump -> move_throw(0, true, nade.lmouse, nade.rmouse)
-      true -> move_throw(0, false, nade.lmouse, nade.rmouse)
+      nade.walk > 0 -> move_throw(nade.walk, nade.jump, nade.lmouse, nade.rmouse, true, nade.direction)
+      nade.run > 0 -> move_throw(nade.run, nade.jump, nade.lmouse, nade.rmouse, false, nade.direction)
+      nade.jump -> move_throw(0, true, nade.lmouse, nade.rmouse, false, nade.direction)
+      true -> move_throw(0, false, nade.lmouse, nade.rmouse, false, nade.direction)
     end
   end
 
