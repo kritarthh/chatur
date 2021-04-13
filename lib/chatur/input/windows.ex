@@ -2,7 +2,7 @@ defmodule Input.Windows do
   require Logger
 
   def is_ready() do
-    "csgo::Counter-Strike: Global Offensive" == String.trim(Shell.execute("cmd.exe /c window.exe"))
+    "csgo::Counter-Strike: Global Offensive" == String.trim(Shell.execute("external/window.exe"))
   end
 
   def get_text_command(text, wid) do

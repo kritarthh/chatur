@@ -41,15 +41,17 @@ defmodule Player do
     Console.execute(~s/bind O "echo stop_movement"/)
     Console.execute(~s/alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow"/)
     Console.execute("con_logfile cfg/chatur/console.log")
-    Console.execute(~s/bind \] "use weapon_knife; use weapon_c4; drop; lastinv; say_team I HAVE DROPPED THE BOMB"/)
+    Console.execute(~s/bind \] "use weapon_knife; use weapon_c4; drop; say_team I HAVE DROPPED THE BOMB"/)
     Console.execute(~s/bind ' "echo usbreset"/)
 
     Console.execute(~s/con_filter_text_out "Execing config"/)
     Console.execute("net_client_steamdatagram_enable_override 1")
+    Console.execute("sensitivity")
   end
 
   def update() do
     # {:reply, :ok, l} = send(Player, :get_location)
+    Logger.info("Updating Player")
     binds()
     send(Player, {:get_status, self()})
   end

@@ -189,7 +189,7 @@ defmodule Movement do
     end
   end
 
-  def approach(l, r \\ 4, mr \\ 4096) do
+  def approach(l, apmu \\ 0.01375, r \\ 4, mr \\ 4096) do
     cl = Player.getpos()
     Logger.debug("Approaching (#{l.alpha}, #{l.beta}, #{l.gamma}) from (#{cl.alpha}, #{cl.beta}, #{cl.gamma})")
 
@@ -208,18 +208,18 @@ defmodule Movement do
     # rdx = (r * :math.pow(dx, 2) * sign(dx))
     # rdy = (r * :math.pow(dy, 2) * sign(dy))
 
-    rdx = dx / @apmu
-    rdy = dy / @apmu
+    rdx = dx / apmu
+    rdy = dy / apmu
 
     ratex = if abs(rdx) < 0.5, do: sign(rdx), else: if abs(rdx) > mr, do: sign(rdx) * mr, else: round(rdx)
     ratey = if abs(rdy) < 0.5, do: sign(rdy), else: if abs(rdy) > mr, do: sign(rdy) * mr, else: round(rdy)
 
     cond do
-      abs(dx) <= 0.02 && abs(dy) <= 0.02 ->
+      abs(dx) <= apmu && abs(dy) <= apmu ->
         nil
       dx != 0 || dy != 0 ->
         move(-ratex, ratey)
-        approach(l)
+        approach(l, apmu)
     end
   end
 
@@ -321,12 +321,18 @@ defmodule Movement do
     # open the log file and set the pointer to the end so that we only grab
     # new log messages
     # GenServer.call(Player, {:approach, %Location{alpha: -41, beta: 108}})
-    {:ok, %{}}
+    {:ok, %{apmu: 0.01375}}
+  end
+
+  def handle_call({:sensitivity, s}, _from, state) do
+    Logger.debug("Updating apmu with sensitivity #{s}")
+    state = Map.put(state, :apmu, 0.022 * s)
+    {:reply, :ok, state}
   end
 
   def handle_info({:approach, l}, state) do
     Logger.debug("Approach location (#{l.alpha}, #{l.beta})")
-    approach(l)
+    approach(l, Map.get(state, :apmu))
     {:noreply, state}
   end
 
@@ -344,14 +350,14 @@ defmodule Movement do
   end
 
   def handle_info({:pronade, nade}, state) do
-    approach(nade.location)
+    approach(nade.location, Map.get(state, :apmu))
     throw_nade(nade)
     {:noreply, state}
   end
 
   def handle_info(:pronade, state) do
     nade = Nade.closest
-    approach(nade.location)
+    approach(nade.location, Map.get(state, :apmu))
     throw_nade(nade)
     {:noreply, state}
   end

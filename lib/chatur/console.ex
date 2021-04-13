@@ -30,6 +30,7 @@ defmodule Console do
       wid ->
         Logger.debug("executing \"#{command}\"")
         Input.type(@exec_key, wid)
+        Process.sleep(10)
     end
   end
 

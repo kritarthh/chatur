@@ -146,6 +146,6 @@ defmodule Input do
   end
 
   def command() do
-    @input_handler_command
+    "#{File.cwd!}/#{@input_handler_command}"
   end
 end

@@ -24,7 +24,11 @@ defmodule LogDispatcher do
       String.starts_with?(line, "Damage Given to ") or String.starts_with?(line, "Player: ") ->
         send(Chat, {:collect, line, "Player: "})
       String.starts_with?(line, "Started tracking Steam Net Connection to") ->
-        Logger.debug("Match found accepting code goes here")
+        Logger.info("Match found accepting code goes here")
+      String.starts_with?(line, ~s/"sensitivity" = /) ->
+        {s, _} = String.split(line, "\"") |> Enum.at(3) |> Float.parse
+        Logger.info("Update movement config with sensitivity #{s}")
+        GenServer.call(Movement, {:sensitivity, s})
       line == "Counter-Strike: Global Offensive" ->
         Logger.debug("Connected to match, update player")
         Player.update()
@@ -33,7 +37,7 @@ defmodule LogDispatcher do
       line == "pronade" ->
         send(Movement, :pronade)
       line == "chatur" ->
-        Player.init(:ok)
+        Player.update
       line == "stop_movement" ->
         Movement.kill()
       line == "show_nade_options" ->
