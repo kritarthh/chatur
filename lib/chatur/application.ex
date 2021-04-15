@@ -23,7 +23,8 @@ defmodule Chatur.Application do
       {LogDispatcher, name: LogDispatcher},
       {Player, name: Player},
       {Movement, name: Movement},
-      {Chat, name: Chat}
+      {Chat, name: Chat},
+      {DynamicSupervisor, strategy: :one_for_one, name: Nades},
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

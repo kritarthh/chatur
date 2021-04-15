@@ -1,4 +1,6 @@
 defmodule Nades.Overpass do
+  use Nades.Agent
+
   def store() do
     [
       %Nade{

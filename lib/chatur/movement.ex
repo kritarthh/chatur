@@ -257,6 +257,7 @@ defmodule Movement do
         if rmb, do: Input.send_input(:mouse, :up, :right, wid)
         if jump, do: Input.type(" ", wid)
         if duration > 0 do
+          Process.sleep(200)
           Input.send_input(:key, :up, "#{if walk, do: String.upcase(move_key), else: move_key}", wid)
         end
     end

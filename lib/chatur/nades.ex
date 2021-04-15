@@ -15,7 +15,7 @@ defmodule Nade do
     crouch: false,
     lmouse: true,
     rmouse: false,
-    tolerance: 10
+    tolerance: 1
   ]
 
   defimpl String.Chars, for: Nade do
@@ -49,7 +49,7 @@ defmodule Nade do
   def closest() do
     cpos = Player.getpos
     Logger.debug("current position is #{cpos}")
-    sorted_list = map_store(Player.get_map()).store()
+    sorted_list = map_store(Player.get_map()).nades()
     |> Enum.sort_by(
     fn nade ->
       diff = abs(nade.location.alpha - cpos.alpha) +
@@ -73,8 +73,8 @@ defmodule Nade do
     map_store(Player.get_map()).store()
     |> Enum.filter(
     fn nade ->
-      abs(nade.location.x - cpos.x) +
-      abs(nade.location.y - cpos.y) +
+      abs(nade.location.x - cpos.x) < nade.tolerance and
+      abs(nade.location.y - cpos.y) < nade.tolerance and
       abs(nade.location.z - cpos.z) < nade.tolerance
     end
     )
@@ -100,6 +100,43 @@ defmodule Nade do
         send(Movement, {:pronade, overlay_nade})
       nil ->
         :ok
+    end
+  end
+
+  def init_maps_agents(map) do
+    spec = %{id: "#{inspect map}", start: {map, :start_link, []}}
+    DynamicSupervisor.start_child(Nades, spec)
+  end
+end
+
+
+
+defmodule Nades.Agent do
+  defmacro __using__(_) do
+    quote do
+      use Agent
+      require Logger
+
+      # store() would be defined by modules using this
+      def start_link() do
+        Agent.start_link(fn -> store() end, name: __MODULE__)
+      end
+
+      def nades() do
+        Agent.get(__MODULE__, & &1)
+      end
+
+      def update() do
+        nades = case File.read("#{File.cwd!}/#{__MODULE__}.nades") do
+          {:ok, contents} ->
+            Code.eval_string(contents)
+          _ ->
+            Logger.warn("#{__MODULE__}.nades file not found")
+            []
+        end
+        Agent.update(__MODULE__, store() ++ nades)
+      end
+
     end
   end
 end

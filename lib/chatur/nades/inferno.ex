@@ -1,4 +1,6 @@
 defmodule Nades.Inferno do
+  use Nades.Agent
+
   def store() do
     [
       %Nade{

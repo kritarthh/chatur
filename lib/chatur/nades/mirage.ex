@@ -1,4 +1,6 @@
 defmodule Nades.Mirage do
+  use Nades.Agent
+
   def store() do
     [
       %Nade{
