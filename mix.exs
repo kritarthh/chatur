@@ -49,7 +49,7 @@ defmodule Chatur.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:math, "~> 0.6.0"},
-      {:bakeware, "~> 0.1.5"}
+      {:bakeware, github: "kritarthh/bakeware", branch: "windows"}
     ]
   end
 
@@ -70,7 +70,7 @@ defmodule Chatur.MixProject do
 
   def releases do
     [
-      demo: [
+      chatur: [
         steps: [:assemble, &Bakeware.assemble/1]
       ]
     ]

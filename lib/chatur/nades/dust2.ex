@@ -166,14 +166,6 @@ defmodule Nades.Dust2 do
         src: "a long doors",
         dest: "ct spawn cross",
         location: Location.parse("setpos 516.031250 983.078003 65.535233;setang -52.169254 88.662766 0.000000")
-      },
-      %Nade{
-        map: "de_dust2",
-        code: "d2-ald-btunbox",
-        src: "ut",
-        dest: "b tunnels box",
-        run: 200,
-        location: Location.parse("setpos -2185.968750 1059.022095 103.864021;setang -13.008841 57.042904 0.000000")
       }
     ]
   end

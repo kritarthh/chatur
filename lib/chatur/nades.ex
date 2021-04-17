@@ -41,7 +41,7 @@ defmodule Nade do
       "de_dust2" -> Nades.Dust2
       "de_train" -> Nades.Train
       "de_overpass" -> Nades.Overpass
-      _ -> Nades.NotFound
+      _ -> Nades.Train
     end
   end
 
@@ -87,7 +87,7 @@ defmodule Nade do
     |> String.slice(1..-1)
     text = if overlay_text == "", do: "No nades found", else: overlay_text
     Logger.info("Overlay text: #{text}")
-    spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./external/noptions \""<>text<>"\""]) end)
+    # spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./external/noptions \""<>text<>"\""]) end)
     Display.write(text)
     :ok
   end
@@ -127,14 +127,17 @@ defmodule Nades.Agent do
       end
 
       def update() do
-        nades = case File.read("#{File.cwd!}/#{__MODULE__}.nades") do
+        file = "#{File.cwd!}/nade_files/#{__MODULE__ |> to_string |> String.split(".") |> List.last |> String.downcase}.ex"
+        case File.read(file) do
           {:ok, contents} ->
-            Code.eval_string(contents)
+            {nades, _} = Code.eval_string(contents)
+            if is_list(nades) do
+              Agent.update(__MODULE__, fn state -> store() ++ nades end)
+            end
           _ ->
-            Logger.warn("#{__MODULE__}.nades file not found")
-            []
+            Logger.warn("#{file} file not found")
         end
-        Agent.update(__MODULE__, store() ++ nades)
+        :ok
       end
 
     end

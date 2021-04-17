@@ -107,6 +107,7 @@ defmodule Player do
 
   def handle_info({:map, m}, state) do
     Logger.debug("update map to #{m}")
+    Nade.init_maps_agents(Nade.map_store(m))
     {:noreply, Map.put(state, :map, m)}
   end
 
