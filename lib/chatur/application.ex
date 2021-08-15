@@ -6,6 +6,8 @@ defmodule Chatur.Application do
   use Application
 
   def start(_type, _args) do
+    Startup.make_links()
+
     children = [
       # Start the Ecto repository
       # Chatur.Repo,
@@ -24,7 +26,7 @@ defmodule Chatur.Application do
       {Player, name: Player},
       {Movement, name: Movement},
       {Chat, name: Chat},
-      {DynamicSupervisor, strategy: :one_for_one, name: Nades},
+      {DynamicSupervisor, strategy: :one_for_one, name: Nades}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

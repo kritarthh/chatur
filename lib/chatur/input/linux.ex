@@ -18,12 +18,18 @@ defmodule Input.Linux do
     case direction do
       :up ->
         "xdotool mouseup --window #{wid} #{if button == :right, do: 2, else: 1}"
+
       :down ->
         "xdotool mousedown --window #{wid} #{if button == :right, do: 2, else: 1}"
+
       :click ->
         "xdotool click --window #{wid} #{if button == :right, do: 2, else: 1}"
+
+      :move ->
+        "xdotool mousemove --window #{wid} #{button}"
+
       _ ->
-        Logger.warn("unknown direction #{inspect direction}")
+        Logger.warn("unknown direction #{inspect(direction)}")
     end
   end
 
@@ -31,12 +37,18 @@ defmodule Input.Linux do
     case direction do
       :up ->
         Shell.execute("xdotool mouseup --window #{wid} #{if button == :right, do: 2, else: 1}")
+
       :down ->
         Shell.execute("xdotool mousedown --window #{wid} #{if button == :right, do: 2, else: 1}")
+
       :click ->
         Shell.execute("xdotool click --window #{wid} #{if button == :right, do: 2, else: 1}")
+
+      :move ->
+        Shell.execute("xdotool mousemove --window #{wid} #{button}")
+
       _ ->
-        Logger.warn("unknown direction #{inspect direction}")
+        Logger.warn("unknown direction #{inspect(direction)}")
     end
   end
 
@@ -44,12 +56,15 @@ defmodule Input.Linux do
     case direction do
       :down ->
         "xdotool keydown --window #{wid} \"#{key}\""
+
       :up ->
         "xdotool keyup --window #{wid} \"#{key}\""
+
       :click ->
         "xdotool key --window #{wid} \"#{key}\""
+
       _ ->
-        Logger.warn("unknown direction #{inspect direction}")
+        Logger.warn("unknown direction #{inspect(direction)}")
     end
   end
 
@@ -57,18 +72,25 @@ defmodule Input.Linux do
     case direction do
       :down ->
         Shell.execute("xdotool", ["keydown", "--window", "#{wid}", "#{key}"])
+
       :up ->
         Shell.execute("xdotool", ["keyup", "--window", "#{wid}", "#{key}"])
+
       :click ->
         Shell.execute("xdotool", ["key", "--window", "#{wid}", "#{key}"])
+
       _ ->
-        Logger.warn("unknown direction #{inspect direction}")
+        Logger.warn("unknown direction #{inspect(direction)}")
     end
   end
 
   def format(xspacey_list) do
     xspacey_list
-    |> Enum.map(fn x -> "#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/external/humanmouse.bin -r #{Enum.at(["-a", "-f"], Enum.random(0..1))} -x #{String.replace(x, " ", " -y ")}" end)
+    |> Enum.map(fn x ->
+      "#{
+        Application.app_dir(Application.get_application(__MODULE__), "priv")
+      }/external/humanmouse.bin -r -a -x #{String.replace(x, " ", " -y ")}"
+    end)
   end
 
   def get_tmp_file() do

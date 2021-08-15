@@ -4,5 +4,4 @@ defmodule Nades.Train do
   def store() do
     []
   end
-
 end

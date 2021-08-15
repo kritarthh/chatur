@@ -3,16 +3,16 @@ defmodule Player do
 
   use GenServer
 
-  defstruct [location: %Location{}, map: "", team: ""]
+  defstruct location: %Location{}, map: "", team: ""
 
   require Logger
   require Integer
 
-
   def flush() do
     receive do
       _ -> flush()
-    after 0 ->
+    after
+      0 ->
         :ok
     end
   end
@@ -20,11 +20,12 @@ defmodule Player do
   def getpos() do
     # {:reply, :ok, l} = send(Player, :get_location)
     send(Player, {:get_location, self()})
+
     receive do
       %Location{alpha: _, beta: _} = l ->
         l
     after
-      2000 ->
+      1000 ->
         Logger.error("timed out, should not happen")
     end
   end
@@ -37,12 +38,19 @@ defmodule Player do
     for k <- Nade.keys() do
       Console.execute(~s/bind #{k} "echo #{k}"/)
     end
+
     Console.execute(~s/bind I "echo show_nade_options"/)
     Console.execute(~s/bind O "echo stop_movement"/)
-    Console.execute(~s/alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow"/)
+
+    Console.execute(
+      ~s/alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow";/
+    )
+
     Console.execute("con_logfile cfg/chatur/console.log")
-    Console.execute(~s/bind \] "use weapon_knife; use weapon_c4; drop; say_team I HAVE DROPPED THE BOMB"/)
-    Console.execute(~s/bind ' "echo usbreset"/)
+
+    Console.execute(
+      ~s/bind \] "use weapon_knife; use weapon_c4; drop; say_team I HAVE DROPPED THE BOMB"/
+    )
 
     Console.execute(~s/con_filter_text_out "Execing config"/)
     Console.execute("net_client_steamdatagram_enable_override 1")
@@ -82,7 +90,7 @@ defmodule Player do
         send(pid, location)
         {:noreply, Map.put(state, :location, location)}
     after
-      1000 ->
+      900 ->
         Logger.warn("Timed out waiting for location, use last")
         send(pid, state.location)
         {:noreply, state}
@@ -108,6 +116,7 @@ defmodule Player do
   def handle_info({:map, m}, state) do
     Logger.debug("update map to #{m}")
     Nade.init_maps_agents(Nade.map_store(m))
+    Nade.map_store(m).update()
     {:noreply, Map.put(state, :map, m)}
   end
 
@@ -120,6 +129,4 @@ defmodule Player do
     Logger.warn("Unwanted message #{msg}")
     {:noreply, state}
   end
-
-
 end
