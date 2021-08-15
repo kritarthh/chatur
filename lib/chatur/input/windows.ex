@@ -103,7 +103,7 @@ defmodule Input.Windows do
   end
 
   def get_tmp_file() do
-    "Z:/chatur.movement.commands.bat"
+    "C:/chatur.movement.commands.bat"
   end
 
   def execute_file(filename) do
@@ -121,7 +121,7 @@ defmodule Input.Windows do
         "/c",
         "mklink",
         "C:\Program Files (x86)\Steam\steamapps\common\Counter-Strike Global Offensive\csgo\cfg\chatur\console.log",
-        "Z:\console.log"
+        "C:\console.log"
       ]
     )
   end

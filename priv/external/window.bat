@@ -28,7 +28,6 @@ endlocal & exit /b %errorlevel%
 */
 
 
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System;
 using System.Text;
@@ -49,9 +48,9 @@ public class user32
     /// <returns></returns>
     public delegate bool EnumDelegate(IntPtr hWnd, int lParam);
 
-	
-	[DllImport("user32.dll", SetLastError=true)]
-	static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [DllImport("user32.dll", SetLastError=true)]
+    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
     /// <summary>
     /// check if windows visible
     /// </summary>
@@ -91,17 +90,16 @@ public class user32
     /// </summary>
     static void Main()
     {
-		var collection = new List<string>();
         var hWnd = GetForegroundWindow();
-		StringBuilder strbTitle = new StringBuilder(255);
-		int nLength = user32.GetWindowText(hWnd, strbTitle, strbTitle.Capacity + 1);
-		string strTitle = strbTitle.ToString();
-		
-		if (user32.IsWindowVisible(hWnd) && string.IsNullOrEmpty(strTitle) == false)
-		{
-			uint res;
-			GetWindowThreadProcessId(hWnd,out res);
-			Console.WriteLine(Process.GetProcessById((int)res).ProcessName+"::"+strTitle);
-		}
+        StringBuilder strbTitle = new StringBuilder(1024);
+        int nLength = user32.GetWindowText(hWnd, strbTitle, strbTitle.Capacity + 1);
+        string strTitle = strbTitle.ToString();
+
+        if (user32.IsWindowVisible(hWnd) && string.IsNullOrEmpty(strTitle) == false)
+        {
+            uint res;
+            GetWindowThreadProcessId(hWnd,out res);
+            Console.WriteLine(Process.GetProcessById((int)res).ProcessName+"::"+strTitle);
+        }
     }
 }

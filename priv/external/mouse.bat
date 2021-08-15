@@ -274,7 +274,7 @@ public static Keys ConvertCharToVirtualKey(char ch) {
         static void TypeString(string text, bool keydown = true, bool keyup = true)
         {
             List<INPUT> kbInput = new List<INPUT>();
-            foreach(char c in text){
+            if (text == "alt") {
                 INPUT keyInput = new INPUT();
                 keyInput.type = SendInputEventType.InputKeyboard;
 
@@ -282,19 +282,9 @@ public static Keys ConvertCharToVirtualKey(char ch) {
                 keyInput.mkhi.ki.wVk = 0;
                 keyInput.mkhi.ki.dwFlags = (uint)KeyboardEventFlags.KEYEVENTF_SCANCODE;
 
-                Keys vKCode = ConvertCharToVirtualKey(c);
-                bool shift = false;
-                if ((vKCode & Keys.Shift) > 0) {
-                    shift = true;
-                    vKCode ^= Keys.Shift;
-                }
+                Keys vKCode = Keys.Menu;
 
                 if (keydown) {
-                    if (shift) {
-                        keyInput.mkhi.ki.wScan = MapVirtualKey((uint)Keys.ShiftKey, 0);
-                        kbInput.Add(keyInput);
-                    }
-
                     keyInput.mkhi.ki.wScan = MapVirtualKey((uint)vKCode, 0);
                     kbInput.Add(keyInput);
                 }
@@ -304,13 +294,45 @@ public static Keys ConvertCharToVirtualKey(char ch) {
 
                     keyInput.mkhi.ki.wScan = MapVirtualKey((uint)vKCode, 0);
                     kbInput.Add(keyInput);
+                }
+            } else {
+                foreach(char c in text){
+                    INPUT keyInput = new INPUT();
+                    keyInput.type = SendInputEventType.InputKeyboard;
 
-                    if (shift) {
-                        keyInput.mkhi.ki.wScan = MapVirtualKey((uint)Keys.ShiftKey, 0);
+                    keyInput.mkhi.ki.time = 0;
+                    keyInput.mkhi.ki.wVk = 0;
+                    keyInput.mkhi.ki.dwFlags = (uint)KeyboardEventFlags.KEYEVENTF_SCANCODE;
+
+                    Keys vKCode = ConvertCharToVirtualKey(c);
+                    bool shift = false;
+                    if ((vKCode & Keys.Shift) > 0) {
+                        shift = true;
+                        vKCode ^= Keys.Shift;
+                    }
+
+                    if (keydown) {
+                       if (shift) {
+                           keyInput.mkhi.ki.wScan = MapVirtualKey((uint)Keys.ShiftKey, 0);
+                           kbInput.Add(keyInput);
+                        }
+
+                        keyInput.mkhi.ki.wScan = MapVirtualKey((uint)vKCode, 0);
                         kbInput.Add(keyInput);
                     }
-                }
+                    if (keyup) {
+                        //Prepare a keyup events
+                        keyInput.mkhi.ki.dwFlags |= (uint)KeyboardEventFlags.KEYEVENTF_KEYUP;
 
+                        keyInput.mkhi.ki.wScan = MapVirtualKey((uint)vKCode, 0);
+                        kbInput.Add(keyInput);
+
+                        if (shift) {
+                            keyInput.mkhi.ki.wScan = MapVirtualKey((uint)Keys.ShiftKey, 0);
+                            kbInput.Add(keyInput);
+                        }
+                    }
+                }
             }
             SendInput((uint)kbInput.Count, ref kbInput.ToArray()[0], Marshal.SizeOf(typeof(INPUT)));
         }
