@@ -25,7 +25,8 @@ You can directly download executable for Windows and Linux from the releases pag
   * Start *Chatur* with `iex -S mix`
   
 ### How to use
-  * Once inside a map, `exec chatur` in console to activate the program.
+  * `exec chatur` in CSGO console to activate the program. This can also be added as a launch option.
+  * Once inside a map, press `;` to update the nades.
   * *Nades Updated* can be seen on the top left corner once the setup is successful.
   * Press `i` to show nade options from your current spot and press the shown key to throw.
   * Press `o` to halt the current throw. Helps if you are rushed and you are in the middle of the throw.
