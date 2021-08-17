@@ -91,9 +91,7 @@ defmodule Input.Windows do
   def format(xspacey_list) do
     xspacey_list
     |> Enum.map(fn x ->
-      "#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/external/humanmouse.exe -r #{
-        Enum.at(["-a", "-f"], Enum.random(0..1))
-      } -x #{String.replace(x, " ", " -y ")}"
+      "#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/external/humanmouse.exe -r -a -x #{String.replace(x, " ", " -y ")}"
     end)
 
     # movements = xspacey_list

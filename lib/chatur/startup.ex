@@ -35,10 +35,13 @@ defmodule Startup do
           Logger.error("Launch option not found. Please set +exec chatur/startup.cfg in your csgo launch options in Steam and then restart chatur")
         end
       {:win32, _} ->
-        Logger.info("bootstraping")
         File.mkdir("C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur")
-        File.copy("priv/startup.cfg", "C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur.cfg")
-        File.touch(Console.get_exec_file())
+        File.copy("#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/startup.cfg", "C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur.cfg")
+        File.copy("#{Application.app_dir(Application.get_application(__MODULE__), "priv")}/nadeking.cfg", "C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/nadeking.cfg")
+        if not File.exists?(Console.get_exec_file()) do
+          File.touch(Console.get_exec_file())
+          Logger.warn("Please exec chatur in csgo console, followed by ; (semicolon) when alive in map")
+        end
         File.touch(LogReader.get_log_file())
       _ -> nil
     end

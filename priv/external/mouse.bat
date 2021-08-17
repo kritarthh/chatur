@@ -274,7 +274,7 @@ public static Keys ConvertCharToVirtualKey(char ch) {
         static void TypeString(string text, bool keydown = true, bool keyup = true)
         {
             List<INPUT> kbInput = new List<INPUT>();
-            if (text == "alt") {
+            if (text == "f6") {
                 INPUT keyInput = new INPUT();
                 keyInput.type = SendInputEventType.InputKeyboard;
 
@@ -282,7 +282,8 @@ public static Keys ConvertCharToVirtualKey(char ch) {
                 keyInput.mkhi.ki.wVk = 0;
                 keyInput.mkhi.ki.dwFlags = (uint)KeyboardEventFlags.KEYEVENTF_SCANCODE;
 
-                Keys vKCode = Keys.Menu;
+                // Keys vKCode = Keys.Menu;
+                Keys vKCode = Keys.F6;
 
                 if (keydown) {
                     keyInput.mkhi.ki.wScan = MapVirtualKey((uint)vKCode, 0);

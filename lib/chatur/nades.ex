@@ -128,9 +128,11 @@ defmodule Nades.Agent do
       end
 
       def update() do
-        Logger.debug("Updating nades from file")
+        Logger.info("Updating nades from file")
         file =
-          "#{File.cwd!()}/nade_files/#{
+          "#{
+          Application.app_dir(Application.get_application(__MODULE__), "priv")
+          }/nade_files/#{
             __MODULE__ |> to_string |> String.split(".") |> List.last() |> String.downcase()
           }.ex"
 
@@ -144,6 +146,17 @@ defmodule Nades.Agent do
 
           _ ->
             Logger.warn("#{file} file not found")
+        end
+
+        Logger.info("Updating nades from github")
+        %HTTPoison.Response{body: body} = HTTPoison.get!("https://raw.githubusercontent.com/kritarthh/chatur/main/priv/nade_files/#{
+          __MODULE__ |> to_string |> String.split(".") |> List.last() |> String.downcase()
+        }.ex")
+        # I know, eval is not safe, but its alpha :p
+        # Once a db is introduced, all this will go away
+        {nades, _} = Code.eval_string(body)
+        if is_list(nades) do
+          Agent.update(__MODULE__, fn state -> store() ++ nades end)
         end
 
         Display.write("Nades updated")
