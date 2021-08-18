@@ -5,7 +5,7 @@ defmodule CrossPlatform.Reader do
     case :os.type() do
       {:win32, _} ->
         quote do
-          @log_file "C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur/console.log"
+          @log_file "R:/console.log"
         end
 
       {:unix, :linux} ->

@@ -5,7 +5,7 @@ defmodule CrossPlatform.Console do
     case :os.type() do
       {:win32, _} ->
         quote do
-          @exec_file "C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur/say.cfg"
+          @exec_file "R:/say.cfg"
         end
 
       {:unix, :linux} ->
