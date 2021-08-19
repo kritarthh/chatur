@@ -43,7 +43,7 @@ defmodule Player do
     Console.execute(~s/bind O "echo stop_movement"/)
 
     Console.execute(
-      ~s/alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind alt "+jumpthrow";/
+      ~s/alias "+jumpthrow" "+jump;-attack"; alias "-jumpthrow" "-jump"; bind f6 "+jumpthrow";/
     )
 
     Console.execute("con_logfile cfg/chatur/console.log")
@@ -64,13 +64,22 @@ defmodule Player do
     send(Player, {:get_status, self()})
   end
 
+  def wait_for_csgo() do
+    if not Input.is_active() do
+      Logger.info("Waiting for CSGO to start")
+      Process.sleep(5000)
+      wait_for_csgo()
+    end
+  end
+
   def start_link(_ \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: Player)
   end
 
   def init(:ok) do
-    # open the log file and set the pointer to the end so that we only grab
-    # new log messages
+    # wait for the csgo process here
+    wait_for_csgo()
+    Logger.info("CSGO started, initializing")
     update()
     {:ok, %Player{}}
   end
@@ -108,7 +117,7 @@ defmodule Player do
         {:noreply, state}
     after
       500 ->
-        Logger.warn("Timed out waiting for status, use last")
+        Logger.debug("Timed out waiting for status, use last")
         {:noreply, state}
     end
   end

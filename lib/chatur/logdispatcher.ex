@@ -73,7 +73,8 @@ defmodule LogDispatcher do
         spawn(fn -> Nade.overlay(line) end)
 
       true ->
-        Logger.debug("Log line \"#{line}\" received")
+        # Logger.debug("Log line \"#{line}\" received")
+        nil
     end
 
     {:noreply, state}

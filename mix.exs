@@ -49,6 +49,7 @@ defmodule Chatur.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:math, "~> 0.6.0"},
+      {:httpoison, "~> 1.8.0"},
       {:bakeware, "~> 0.2.0"}
     ]
   end
