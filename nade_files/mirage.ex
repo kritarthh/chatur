@@ -76,5 +76,23 @@
       "setpos -2599.987061 535.968750 -95.906189;setang -52.492687 -39.30 0.000000"
     ),
     jump: true
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-amain-amain-1w",
+    dest: "a main one way t side",
+    location:
+    Location.parse(
+      "setpos 457.995209 -1711.968750 -176.900116;setang -14.285989 132.331177 0.000000"
+    ),
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-nest-nest-1w",
+    dest: "nest one way right side",
+    location:
+    Location.parse(
+      "setpos -1247.968750 -924.001953 -103.906189;setang 13.633702 56.965256 0.000000"
+    ),
   }
 ]
