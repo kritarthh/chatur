@@ -5,6 +5,7 @@ defmodule Movement do
   require Integer
 
   @max_moves 1000
+  @jump_throw_key "F6"
 
   defp get_random_string(length) do
     1..length
@@ -299,9 +300,9 @@ defmodule Movement do
         Process.sleep(100)
         if jump do
           # clicking this does not work 100% so pressing and releasing
-          Input.send_input(:key, :down, "f6", wid)
+          Input.send_input(:key, :down, @jump_throw_key, wid)
           Process.sleep(100)
-          Input.send_input(:key, :up, "f6", wid)
+          Input.send_input(:key, :up, @jump_throw_key, wid)
         end
         Input.send_input(:mouse, :up, mb, wid)
         # Input.type(" ", wid)
@@ -339,9 +340,9 @@ defmodule Movement do
         if jump do
           Logger.info("Send jumpthrow bind")
           # clicking this does not work 100% so pressing and releasing
-          Input.send_input(:key, :down, "f6", wid)
+          Input.send_input(:key, :down, @jump_throw_key, wid)
           Process.sleep(100)
-          Input.send_input(:key, :up, "f6", wid)
+          Input.send_input(:key, :up, @jump_throw_key, wid)
         end
         if lmb, do: Input.send_input(:mouse, :up, :left, wid)
         if rmb, do: Input.send_input(:mouse, :up, :right, wid)

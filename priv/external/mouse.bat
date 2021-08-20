@@ -274,7 +274,7 @@ public static Keys ConvertCharToVirtualKey(char ch) {
         static void TypeString(string text, bool keydown = true, bool keyup = true)
         {
             List<INPUT> kbInput = new List<INPUT>();
-            if (text == "f6") {
+            if (text == "F6") {
                 INPUT keyInput = new INPUT();
                 keyInput.type = SendInputEventType.InputKeyboard;
 

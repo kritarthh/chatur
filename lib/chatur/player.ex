@@ -65,9 +65,9 @@ defmodule Player do
   end
 
   def wait_for_csgo() do
-    if not Input.is_active() do
+    if Input.is_active() == false do
       Logger.info("Waiting for CSGO to start")
-      Process.sleep(5000)
+      Process.sleep(2000)
       wait_for_csgo()
     end
   end
