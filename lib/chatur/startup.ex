@@ -52,15 +52,15 @@ defmodule Startup do
         Shell.execute("#{priv}/ramdisk.bat")
         wait_for_ramdisk()
         # its safe to modify exec file anytime
-        File.rm("#{csgo_cfg}/chatur/say.cfg")
-        File.touch(Console.get_exec_file())
-        Shell.execute("cmd.exe", ["/c", "mklink", "#{csgo_cfg}/chatur/say.cfg", "R:\\say.cfg"])
-        if not File.exists?("#{csgo_cfg}/chatur/console.log") do
-          # we don't want to touch this if already in use by csgo
-          File.touch(LogReader.get_log_file())
-          Shell.execute("cmd.exe", ["/c", "mklink", "#{csgo_cfg}/chatur/console.log", "R:\\console.log"])
-          Logger.warn("Please exec chatur in csgo console, followed by ; (semicolon) when alive in map")
-        end
+        # File.rm("#{csgo_cfg}/chatur/say.cfg")
+        # File.touch(Console.get_exec_file())
+        # Shell.execute("cmd.exe", ["/c", "mklink", "#{csgo_cfg}/chatur/say.cfg", "R:\\say.cfg"])
+        # if not File.exists?("#{csgo_cfg}/chatur/console.log") do
+        #   # we don't want to touch this if already in use by csgo
+        #   File.touch(LogReader.get_log_file())
+        #   Shell.execute("cmd.exe", ["/c", "mklink", "#{csgo_cfg}/chatur/console.log", "R:\\console.log"])
+        #   Logger.warn("Please exec chatur in csgo console, followed by ; (semicolon) when alive in map")
+        # end
       _ -> nil
     end
   end
