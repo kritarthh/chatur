@@ -16,6 +16,13 @@ use Mix.Config
 # Do not print debug messages in production
 config :logger, level: :info
 
+# config :chatur, ChaturWeb.Endpoint,
+#   http: [port: 4000],
+#   debug_errors: false,
+#   code_reloader: false,
+#   check_origin: true
+
+
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

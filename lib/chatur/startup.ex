@@ -22,6 +22,12 @@ defmodule Startup do
         # File.rm_rf("#{home}/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur/console.log")
         File.touch(LogReader.get_log_file())
 
+        priv = Application.app_dir(Application.get_application(__MODULE__), "priv")
+        csgo_cfg = "#{home}/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/"
+        File.mkdir("#{csgo_cfg}/chatur")
+        File.copy("#{priv}/startup.cfg", "#{csgo_cfg}/chatur.cfg")
+        File.copy("#{priv}/nadeking.cfg", "#{csgo_cfg}/nadeking.cfg")
+
         _ = Shell.bash("ln -s #{Console.get_exec_file()} #{home}/.steam/steam/steamapps/common/Counter-Strike\\ Global\\ Offensive/csgo/cfg/chatur/say.cfg")
         _ = Shell.bash("ln -s #{LogReader.get_log_file()} #{home}/.steam/steam/steamapps/common/Counter-Strike\\ Global\\ Offensive/csgo/cfg/chatur/console.log")
 

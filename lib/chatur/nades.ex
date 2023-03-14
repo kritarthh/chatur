@@ -14,6 +14,7 @@ defmodule Nade do
             crouch: false,
             lmouse: true,
             rmouse: false,
+            type: "smoke",
             tolerance: 1
 
   defimpl String.Chars, for: Nade do
@@ -156,7 +157,7 @@ defmodule Nades.Agent do
         # Once a db is introduced, all this will go away
         {nades, _} = Code.eval_string(body)
         if is_list(nades) do
-          Agent.update(__MODULE__, fn state -> store() ++ nades end)
+          Agent.update(__MODULE__, fn state -> state ++ nades end)
         end
 
         Display.write("Nades updated")

@@ -34,7 +34,7 @@ defmodule Player do
     GenServer.call(Player, :get_map)
   end
 
-  defp binds() do
+  def binds() do
     for k <- Nade.keys() do
       Console.execute(~s/bind #{k} "echo #{k}"/)
     end
@@ -48,9 +48,9 @@ defmodule Player do
 
     Console.execute("con_logfile cfg/chatur/console.log")
 
-    Console.execute(
-      ~s/bind \] "use weapon_knife; use weapon_c4; drop; say_team I HAVE DROPPED THE BOMB"/
-    )
+    # Console.execute(
+    #   ~s/bind \] "use weapon_knife; use weapon_c4; drop; say_team I HAVE DROPPED THE BOMB"/
+    # )
 
     Console.execute(~s/con_filter_text_out "Execing config"/)
     Console.execute("net_client_steamdatagram_enable_override 1")
@@ -60,7 +60,7 @@ defmodule Player do
   def update() do
     # {:reply, :ok, l} = send(Player, :get_location)
     Logger.info("Updating Player")
-    binds()
+    #binds()
     send(Player, {:get_status, self()})
   end
 
@@ -90,9 +90,8 @@ defmodule Player do
 
   def handle_info({:get_location, pid}, state) do
     # ask logreader to read the log
-    send(LogReader, {:read_until, ~r/^setpos.*;setang\ .*$/})
-
-    Console.execute("getpos")
+    send(LogDispatcher, {:read_until, ~r/^#end$/})
+    Console.execute("status")
 
     receive do
       {:location, location} ->
@@ -104,6 +103,7 @@ defmodule Player do
         send(pid, state.location)
         {:noreply, state}
     end
+
   end
 
   def handle_info({:get_status, _pid}, state) do

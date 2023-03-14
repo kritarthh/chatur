@@ -20,7 +20,7 @@ defmodule Nades.Dust2 do
         location:
           Location.parse("setpos -608.019531 -1063.975342 193.309357;setang -17.5 70.2 0.000000"),
         jump: true,
-        run: 275
+        run: 250
       },
       %Nade{
         map: "de_dust2",

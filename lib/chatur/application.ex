@@ -25,6 +25,7 @@ defmodule Chatur.Application do
       {LogDispatcher, name: LogDispatcher},
       {Player, name: Player},
       {Movement, name: Movement},
+      {Movement.BunnyHop, name: BunnyHop},
       {Chat, name: Chat},
       {DynamicSupervisor, strategy: :one_for_one, name: Nades}
     ]

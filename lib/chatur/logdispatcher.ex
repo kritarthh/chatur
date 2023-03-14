@@ -24,7 +24,12 @@ defmodule LogDispatcher do
       String.starts_with?(line, "map ") ->
         send(
           Player,
-          {:map, line |> String.split(" ") |> Enum.filter(fn t -> t != "" end) |> Enum.at(2)}
+          {:location, Location.parse_status(line)}
+        )
+        Process.send_after(
+          Player,
+        {:map, line |> String.split(" ") |> Enum.filter(fn t -> t != "" end) |> Enum.at(2)},
+          1
         )
 
       String.starts_with?(line, "Damage Given to ") or String.starts_with?(line, "Player: ") ->
@@ -65,6 +70,9 @@ defmodule LogDispatcher do
 
       line == "test" ->
         send(Movement, :approach_position_test)
+
+      line == "bhtoggle" ->
+        Movement.BunnyHop.toggle()
 
       line == "usbreset" ->
         Shell.execute("sudo /home/blackie/workspace/personal/scripts/usbreset.sh")

@@ -245,7 +245,16 @@ defmodule Movement do
   end
 
   def approach(l, apmu \\ 0.022, r \\ 4, mr \\ 4096) do
+
+    # find current xyz
+    # take full screenshot
+    # find base template
+    # move to base template position
+    # execute nade from this base template position
+
+
     cl = Player.getpos()
+    System.cmd("echo", ["test", "ing"])
 
     Logger.debug(
       "Approaching (#{l.alpha}, #{l.beta}, #{l.gamma}) from (#{cl.alpha}, #{cl.beta}, #{cl.gamma})"
