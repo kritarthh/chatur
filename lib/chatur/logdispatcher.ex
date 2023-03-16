@@ -22,10 +22,6 @@ defmodule LogDispatcher do
         send(Player, {:location, Location.parse(line)})
 
       String.starts_with?(line, "map ") ->
-        send(
-          Player,
-          {:location, Location.parse_status(line)}
-        )
         Process.send_after(
           Player,
         {:map, line |> String.split(" ") |> Enum.filter(fn t -> t != "" end) |> Enum.at(2)},

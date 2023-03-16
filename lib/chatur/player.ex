@@ -60,7 +60,7 @@ defmodule Player do
   def update() do
     # {:reply, :ok, l} = send(Player, :get_location)
     Logger.info("Updating Player")
-    #binds()
+    binds()
     send(Player, {:get_status, self()})
   end
 
@@ -89,21 +89,12 @@ defmodule Player do
   end
 
   def handle_info({:get_location, pid}, state) do
-    # ask logreader to read the log
-    send(LogDispatcher, {:read_until, ~r/^#end$/})
-    Console.execute("status")
-
-    receive do
-      {:location, location} ->
-        send(pid, location)
-        {:noreply, Map.put(state, :location, location)}
-    after
-      900 ->
-        Logger.warn("Timed out waiting for location, use last")
-        send(pid, state.location)
-        {:noreply, state}
-    end
-
+    {out, _} = System.cmd("#{
+        Application.app_dir(Application.get_application(__MODULE__), "priv")
+      }/external/location.sh", [])
+    location = Location.parse(out)
+    send(pid, location)
+    {:noreply, Map.put(state, :location, location)}
   end
 
   def handle_info({:get_status, _pid}, state) do

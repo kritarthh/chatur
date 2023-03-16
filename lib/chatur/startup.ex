@@ -12,15 +12,18 @@ defmodule Startup do
   def make_links() do
     case :os.type do
       {:unix, _} ->
-        home = Shell.bash("echo $HOME") |> String.trim_trailing("\n")
+        #home = Shell.bash("echo $HOME") |> String.trim_trailing("\n")
+        home = Path.wildcard("/home/*/.steam", match_dot: true) |> List.first |> Path.dirname
 
         # File.rm_rf(Console.get_exec_file())
         # File.rm_rf("#{home}/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur/say.cfg")
         File.touch(Console.get_exec_file())
+        File.chmod(Console.get_exec_file(), 0o777)
 
         # File.rm_rf(LogReader.get_log_file())
         # File.rm_rf("#{home}/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/chatur/console.log")
         File.touch(LogReader.get_log_file())
+        File.chmod(LogReader.get_log_file(), 0o777)
 
         priv = Application.app_dir(Application.get_application(__MODULE__), "priv")
         csgo_cfg = "#{home}/.steam/steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg/"
@@ -44,11 +47,11 @@ defmodule Startup do
         end
         |> Enum.reduce("", fn x, acc -> x<>acc end)
 
-        if (File.read!(config_path) |> String.contains?("chatur/startup.cfg")) do
-          Logger.info("Launch option found.")
-        else
-          Logger.error("Launch option not found. Please set +exec chatur/startup.cfg in your csgo launch options in Steam and then restart chatur")
-        end
+        # if (File.read!(config_path) |> String.contains?("chatur/startup.cfg")) do
+        #   Logger.info("Launch option found.")
+        # else
+        #   Logger.error("Launch option not found. Please set +exec chatur/startup.cfg in your csgo launch options in Steam and then restart chatur")
+        # end
       {:win32, _} ->
         priv = Application.app_dir(Application.get_application(__MODULE__), "priv")
         csgo_cfg = "C:/Program Files (x86)/Steam/steamapps/common/Counter-Strike Global Offensive/csgo/cfg"

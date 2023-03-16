@@ -88,6 +88,67 @@
   },
   %Nade{
     map: "de_mirage",
+    code: "mi-ticket-bs-1w",
+    dest: "b short one way",
+    location:
+    Location.parse(
+      "setpos -902.031250 -2603.077393 -103.906189;setang -31.352903 86.107391 0.000000"
+    ),
+    jump: true
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-ticket-underpass-1w",
+    dest: "underpass one way",
+    location:
+    Location.parse(
+      "setpos -902.031250 -2603.103027 -103.906189;setang -32.440300 95.827347 0.000000"
+    ),
+    jump: true
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-tspawn-jungle",
+    dest: "jungle",
+    location:
+    Location.parse(
+      "setpos 1398.968750 -777.024841 -103.906189;setang -47.000662 -157.03436 0.000000"
+    ),
+    jump: true
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-tspawn-stairs",
+    dest: "a stairs",
+    location:
+    Location.parse(
+      "setpos 1398.968750 -777.024841 -103.906189;setang -48.000662 -158.553436 0.000000"
+    ),
+    jump: true
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-tspawn-stairs",
+    dest: "a stairs alternative",
+    location:
+    Location.parse(
+      "setpos 1398.968750 -777.024841 -103.906189;setang -47.0 -159.053436 0.000000"
+    ),
+    jump: true
+  },
+  %Nade{
+    map: "de_mirage",
+    code: "mi-tspawn-ct",
+    dest: "ct",
+    location:
+    Location.parse(
+      "setpos 1398.968750 -776.992371 -103.906189;setang -20.148922 -144.132919 0.000000"
+    ),
+    walk: 100,
+    jump: true
+  },
+  %Nade{
+    map: "de_mirage",
     code: "mi-nest-nest-1w",
     dest: "nest one way right side",
     location:

@@ -244,21 +244,10 @@ defmodule Movement do
     end
   end
 
-  def approach(l, apmu \\ 0.022, r \\ 4, mr \\ 4096) do
-
-    # find current xyz
-    # take full screenshot
-    # find base template
-    # move to base template position
-    # execute nade from this base template position
-
+  def approach(nade, apmu \\ 0.022, r \\ 4, mr \\ 2048) do
 
     cl = Player.getpos()
-    System.cmd("echo", ["test", "ing"])
-
-    Logger.debug(
-      "Approaching (#{l.alpha}, #{l.beta}, #{l.gamma}) from (#{cl.alpha}, #{cl.beta}, #{cl.gamma})"
-    )
+    l = nade.location
 
     dx = l.beta - cl.beta
     dy = l.alpha - cl.alpha
@@ -281,14 +270,19 @@ defmodule Movement do
         do: sign(rdy),
         else: if(abs(rdy) > mr, do: sign(rdy) * mr, else: round(rdy))
 
+    Logger.debug(
+      "Approaching (#{l.alpha}, #{l.beta}) from (#{cl.alpha}, #{cl.beta}) at rate (#{-ratex}, #{ratey})"
+    )
+
     cond do
       abs(dx) <= apmu && abs(dy) <= apmu ->
         nil
 
       dx != 0 || dy != 0 ->
         move(-ratex, ratey)
-        approach(l, apmu)
+        approach(nade, apmu)
     end
+    nade
   end
 
   def jump() do
@@ -420,6 +414,26 @@ defmodule Movement do
     end
   end
 
+  def equip_nade(nade) do
+    Logger.debug("Throw nade")
+
+    case nade.type do
+      "flash" ->
+        Console.execute("use weapon_flashbang")
+      "molly" ->
+        Console.execute("use weapon_incgrenade;use weapon_molotov")
+      "he" ->
+        Console.execute("use weapon_hegrenade")
+      _ ->
+        Console.execute("use weapon_smokegrenade")
+    end
+    if nade.crouch do
+      Console.execute("+duck")
+    end
+    Process.sleep(10)
+    nade
+  end
+
   def throw_nade(nade) do
     Logger.debug("Throw nade")
 
@@ -436,6 +450,10 @@ defmodule Movement do
       true ->
         move_throw(0, false, nade.lmouse, nade.rmouse, false, nade.direction)
     end
+    if nade.crouch do
+      Console.execute("-duck")
+    end
+    nade
   end
 
   def start_link(_ \\ []) do
@@ -483,15 +501,19 @@ defmodule Movement do
   end
 
   def handle_info({:pronade, nade}, state) do
-    approach(nade.location, Map.get(state, :apmu))
-    throw_nade(nade)
+    nade
+    |> equip_nade
+    |> approach(Map.get(state, :apmu))
+    |> throw_nade
     {:noreply, state}
   end
 
   def handle_info(:pronade, state) do
     nade = Nade.closest()
-    approach(nade.location, Map.get(state, :apmu))
-    throw_nade(nade)
+    nade
+    |> equip_nade
+    |> approach(Map.get(state, :apmu))
+    |> throw_nade
     {:noreply, state}
   end
 

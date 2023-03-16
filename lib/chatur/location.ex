@@ -14,24 +14,16 @@ defmodule Location do
     [xyz, alphabeta] = String.split(location_string, ";")
 
     [x, y, z] =
-      String.split(xyz, " ")
+      xyz |> String.trim |> String.split(" ")
       |> Enum.slice(1..-1)
       |> Enum.map(fn i -> String.to_float(i) end)
 
     [alpha, beta, gamma] =
-      String.split(alphabeta, " ")
+      alphabeta |> String.trim |> String.split(" ")
       |> Enum.slice(1..-1)
       |> Enum.map(fn i -> String.to_float(i) end)
 
-    %Location{x: x, y: y, z: z, alpha: alpha, beta: beta, gamma: gamma}
-  end
-
-  def parse_status(location_string) do
-    [x, y, z] =
-      String.split(location_string, ",")
-      |> Enum.map(fn i -> String.split(i, " ") |> Enum.at(-2) |> String.to_integer end)
-
-    %Location{x: x, y: y, z: z}
+    %Location{x: x, y: y, z: z + 66.0, alpha: alpha, beta: beta, gamma: gamma}
   end
 
   def start_link(opts) do

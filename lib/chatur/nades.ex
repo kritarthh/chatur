@@ -21,7 +21,7 @@ defmodule Nade do
     def to_string(n) do
       "(#{n.map}, #{n.code}, #{n.location}) (lmouse:#{n.lmouse}, rmouse:#{n.rmouse}) (jump:#{
         n.jump
-      }, walk:#{n.walk}, run:#{n.run})"
+      }, walk:#{n.walk}, run:#{n.run}, crouch:#{n.crouch})"
     end
   end
 
@@ -76,8 +76,8 @@ defmodule Nade do
     map_store(Player.get_map()).nades()
     |> Enum.filter(fn nade ->
       abs(nade.location.x - cpos.x) < nade.tolerance and
-        abs(nade.location.y - cpos.y) < nade.tolerance and
-        abs(nade.location.z - cpos.z) < nade.tolerance
+        abs(nade.location.y - cpos.y) < nade.tolerance #and
+        # abs(nade.location.z - cpos.z) < nade.tolerance
     end)
     |> Enum.zip(@keys)
   end
@@ -91,8 +91,8 @@ defmodule Nade do
     text = if overlay_text == "", do: "No nades found", else: overlay_text
     Logger.info("Overlay text: #{text}")
 
-    # spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./external/noptions \""<>text<>"\""]) end)
-    Display.write(text)
+    spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./priv/external/noptions \""<>text<>"\""]) end)
+    #Display.write(text)
     :ok
   end
 
@@ -160,7 +160,8 @@ defmodule Nades.Agent do
           Agent.update(__MODULE__, fn state -> state ++ nades end)
         end
 
-        Display.write("Nades updated")
+        spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./priv/external/noptions \"Nades updated\""]) end)
+        #Display.write("Nades updated")
         :ok
       end
     end
