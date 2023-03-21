@@ -26,6 +26,7 @@ defmodule Chatur.Application do
       {Player, name: Player},
       {Movement, name: Movement},
       {Movement.BunnyHop, name: BunnyHop},
+      {Health, name: Health},
       {Chat, name: Chat},
       {DynamicSupervisor, strategy: :one_for_one, name: Nades}
     ]

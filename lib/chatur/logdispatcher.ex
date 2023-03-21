@@ -70,6 +70,9 @@ defmodule LogDispatcher do
       line == "bhtoggle" ->
         Movement.BunnyHop.toggle()
 
+      line == "htoggle" ->
+        Health.toggle()
+
       line == "usbreset" ->
         Shell.execute("sudo /home/blackie/workspace/personal/scripts/usbreset.sh")
 

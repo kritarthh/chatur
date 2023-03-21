@@ -15,4 +15,8 @@ defmodule Display do
     Console.execute(~s/echo "-------------------------------------------------"/)
     Console.execute(~s/con_filter_text "!@#nevermatches#@!"/)
   end
+
+  def show(text) do
+    spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./priv/external/noptions \""<>text<>"\""]) end)
+  end
 end

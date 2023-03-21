@@ -85,7 +85,7 @@ defmodule Nade do
   def overlay() do
     overlay_text =
       list()
-      |> Enum.reduce("", fn {i, k}, text -> text <> ":#{k} - #{i.dest} (#{i.code})" end)
+      |> Enum.reduce("", fn {i, k}, text -> text <> ":#{k} - #{i.type} #{i.dest} (#{i.code})" end)
       |> String.slice(1..-1)
 
     text = if overlay_text == "", do: "No nades found", else: overlay_text
@@ -153,11 +153,11 @@ defmodule Nades.Agent do
         %HTTPoison.Response{body: body} = HTTPoison.get!("https://raw.githubusercontent.com/kritarthh/chatur/main/priv/nade_files/#{
           __MODULE__ |> to_string |> String.split(".") |> List.last() |> String.downcase()
         }.ex")
-        # I know, eval is not safe, but its alpha :p
+        # I know, eval is not safe and a huge risk, but its alpha :p
         # Once a db is introduced, all this will go away
         {nades, _} = Code.eval_string(body)
         if is_list(nades) do
-          Agent.update(__MODULE__, fn state -> state ++ nades end)
+          Agent.update(__MODULE__, fn state -> Enum.uniq(state ++ nades) end)
         end
 
         spawn(fn -> Shell.execute("bash", ["-c", "killall noptions 2> /dev/null ; ./priv/external/noptions \"Nades updated\""]) end)
