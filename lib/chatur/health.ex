@@ -30,7 +30,7 @@ defmodule Health do
   end
 
   def init(:ok) do
-    {:ok, %{toggle: false, health: ""}}
+    {:ok, %{toggle: false, health: "", team: "CT"}}
   end
 
   def start() do
@@ -69,6 +69,11 @@ defmodule Health do
     {:noreply, state}
   end
 
+  def handle_info({:team, team}, state) do
+    state = Map.put(state, :team, team)
+    {:noreply, state}
+  end
+
   def handle_info(:health, state) do
     is_on = Map.get(state, :toggle)
     if is_on do
@@ -78,7 +83,7 @@ defmodule Health do
       players = parse(out)
       rem_health = players
       |> Enum.filter(fn i ->
-        i.health > 0 and i.health < 100 and i.team != "CT"
+        i.health > 0 and i.health < 100 and i.team != Map.get(state, :team)
       end)
       |> Enum.reduce([], fn i, acc ->
         Logger.debug("#{i}")
@@ -92,7 +97,7 @@ defmodule Health do
         else
           if Map.get(state, :health) != "" do
             Display.show(rem_health)
-            Console.execute("say_team gg")
+            # Console.execute("say_team gg")
           end
         end
         Map.put(state, :health, rem_health)

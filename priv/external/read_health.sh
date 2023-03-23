@@ -23,14 +23,14 @@ for i in $(seq 0 16); do
 	if [ "$name" = "unconnected" ] || [ "$name" = "GOTV" ] ; then
 		continue
 	fi
-	data="$data$team"
-	data="$data: $name"
 	#health
 	health="$(xxd -p -s $(( $playerresaddr + 0x171d + 0x100 + $idx * 4 )) -l 4 /proc/$pid/mem)"
 	health=$(echo -n $((16#$health)))
 	if [ "$health" = "0" ] ; then
 		continue
 	fi
+	data="$data$team"
+	data="$data: $name"
 	data="$data: $health\n"
 	#wins and rank
 	#name="$(xxd -p -s $(( $playerresaddr + 0x171d + 0x1b88 + $idx * 4 )) -l 4 /proc/$pid/mem)"

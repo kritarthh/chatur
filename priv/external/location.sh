@@ -3,6 +3,11 @@ set -e
 
 [ $(id -u) = "0" ] || { sudo "$0" "$@"; exit $?; }
 
+echoerr() { echo "$@" 1>&2; }
+if [ "$1" != "" ] ; then
+	echoerr() { echo "$@" >/dev/null; }
+fi
+
 cd "$(dirname $0)"
 
 pid=$(ps aux |grep [c]sgo_linux |awk -F' ' '{print $2}')

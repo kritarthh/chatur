@@ -1,6 +1,8 @@
 defmodule Match do
   require Logger
 
+  @accept_button 0.4
+
   def screen() do
     [width | [height]] =
       Shell.execute("xrandr")
@@ -15,8 +17,8 @@ defmodule Match do
       |> Enum.map(&String.to_integer(&1))
 
     Logger.debug("screen size is #{width} by #{height}")
-    Logger.debug("center is #{div(width, 2)} #{trunc(height*0.55)}")
-    "#{div(width, 2)} #{trunc(height*0.55)}"
+    Logger.debug("center is #{div(width, 2)} #{trunc(height*@accept_button)}")
+    "#{div(width, 2)} #{trunc(height*@accept_button)}"
   end
 
   def screen() do
@@ -33,8 +35,8 @@ defmodule Match do
       |> Enum.map(&String.to_integer(&1))
 
     Logger.debug("screen size is #{width} by #{height}")
-    Logger.debug("Accept button should be at #{div(width, 2)} #{trunc(height*0.55)}")
-    "#{div(width, 2)} #{trunc(height*0.55)}"
+    Logger.debug("Accept button should be at #{div(width, 2)} #{trunc(height*@accept_button)}")
+    "#{div(width, 2)} #{trunc(height*@accept_button)}"
   end
 
   def accept() do

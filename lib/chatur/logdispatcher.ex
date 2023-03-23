@@ -49,6 +49,12 @@ defmodule LogDispatcher do
       line == "#end" ->
         send(Player, :status)
 
+      String.starts_with?(line, "(Terrorist) ") or String.starts_with?(line, "*DEAD*(Terrorist) ") ->
+        send(Health, {:team, "T"})
+
+      String.starts_with?(line, "(Counter-Terrorist) ") or String.starts_with?(line, "*DEAD*(Counter-Terrorist) ") ->
+        send(Health, {:team, "CT"})
+
       line == "pronade" ->
         send(Movement, :pronade)
 
